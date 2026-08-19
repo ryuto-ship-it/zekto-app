@@ -17,6 +17,7 @@ import { colors } from './src/theme/theme';
 import { AppProvider } from './src/context/AppContext';
 import { ToastProvider } from './src/context/ToastContext';
 import RootNavigator from './src/navigation/RootNavigator';
+import WebPhoneFrame from './src/components/WebPhoneFrame';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -51,14 +52,16 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <View style={{ flex: 1, backgroundColor: colors.paper }}>
-        <AppProvider>
-          <ToastProvider>
-            <RootNavigator />
-          </ToastProvider>
-        </AppProvider>
-        <StatusBar style="dark" />
-      </View>
+      <WebPhoneFrame>
+        <View style={{ flex: 1, backgroundColor: colors.paper }}>
+          <AppProvider>
+            <ToastProvider>
+              <RootNavigator />
+            </ToastProvider>
+          </AppProvider>
+          <StatusBar style="dark" />
+        </View>
+      </WebPhoneFrame>
     </SafeAreaProvider>
   );
 }

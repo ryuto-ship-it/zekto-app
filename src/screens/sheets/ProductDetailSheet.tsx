@@ -1,19 +1,26 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors, fonts, categoryLabels } from '../../theme/theme';
+import { colors, fonts, radii, categoryLabels } from '../../theme/theme';
 import { getProduct } from '../../data/products';
 import { won, finalPrice, imgUrl } from '../../utils/format';
 import Sheet from '../../components/Sheet';
 import PriceLadder from '../../components/PriceLadder';
 import { PrimaryButton } from '../../components/Buttons';
+import { useToast } from '../../context/ToastContext';
 import { RootStackParamList } from '../../navigation/types';
+
+const REASON_CHIPS = [
+  { label: 'Card keeps failing abroad?', toast: "That's exactly why stablecoin works here." },
+  { label: 'Already holding stablecoin?', toast: 'Even better — pay straight from your balance.' },
+];
 
 export default function ProductDetailSheet() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'ProductDetail'>>();
   const product = getProduct(route.params.productId);
+  const showToast = useToast();
 
   if (!product) return null;
 
@@ -47,17 +54,26 @@ export default function ProductDetailSheet() {
           </Text>
         </View>
 
+        <View style={styles.reasonRow}>
+          {REASON_CHIPS.map((r) => (
+            <Pressable key={r.label} style={styles.reasonChip} onPress={() => showToast(r.toast)}>
+              <Text style={styles.reasonChipText}>{r.label}</Text>
+            </Pressable>
+          ))}
+        </View>
+
         <View style={styles.ladderCard}>
           <Text style={styles.ladderCap}>Same benefit, three ways to pay</Text>
           <PriceLadder
             variant="detail"
             rows={[
               { label: 'Card', amount: cardPrice, widthPct: 95, kind: 'card' },
-              { label: 'Cash', amount: cashPrice, widthPct: 88, kind: 'cash' },
-              { label: 'Stablecoin', amount: coinPrice, widthPct: Math.max(30, 100 - product.coinPct * 2), kind: 'coin' },
+              { label: 'Cash', amount: cashPrice, widthPct: 92, kind: 'cash' },
+              { label: 'Stablecoin', amount: coinPrice, widthPct: Math.max(85, 100 - product.coinPct * 2), kind: 'coin' },
             ]}
-            bestText={`BEST · ${won(product.price - coinPrice)} CHEAPER THAN CARD`}
+            bestText={`ALWAYS ACCEPTED · ${won(product.price - coinPrice)} CHEAPER`}
           />
+          <Text style={styles.ladderNote}>Card merchant fees, shared back with you.</Text>
         </View>
       </View>
     </Sheet>
@@ -74,8 +90,15 @@ const styles = StyleSheet.create({
   aiBadge: { flexDirection: 'row', backgroundColor: colors.goldTint, borderWidth: 1, borderColor: '#E4D6A8', padding: 12, borderRadius: 12, marginVertical: 14 },
   aiText: { fontSize: 11.5, color: '#7A6023', flex: 1, fontFamily: fonts.sans },
   aiBold: { color: '#5E4A1A', fontFamily: fonts.sansBold },
+  reasonRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 4 },
+  reasonChip: {
+    backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line, borderRadius: radii.pill,
+    paddingVertical: 7, paddingHorizontal: 12,
+  },
+  reasonChipText: { fontSize: 11.5, color: colors.jadeDeep, fontFamily: fonts.sansBold },
   ladderCard: { backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line, borderRadius: 16, padding: 14, marginVertical: 14 },
   ladderCap: { fontSize: 10.5, textTransform: 'uppercase', letterSpacing: 0.6, color: colors.inkSoft, fontFamily: fonts.sansBold, marginBottom: 10 },
+  ladderNote: { fontSize: 10.5, color: colors.inkSoft, marginTop: 10, fontFamily: fonts.sans },
   ctaPrice: {},
   ctaWas: { fontSize: 11, color: '#9AA79D', textDecorationLine: 'line-through', fontFamily: fonts.mono },
   ctaNow: { fontFamily: fonts.monoSemiBold, fontSize: 18, color: colors.jadeDeep },

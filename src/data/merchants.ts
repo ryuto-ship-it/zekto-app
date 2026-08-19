@@ -18,7 +18,7 @@ export const MERCHANTS: Merchant[] = [
     loc: 'Gangnam-gu, Seoul',
     rating: 4.9,
     pos: { left: '30%', top: '28%' },
-    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be',
+    image: 'https://images.unsplash.com/photo-1590439471364-192aa70c0b53',
   },
   {
     id: 'm2',
@@ -45,7 +45,7 @@ export const MERCHANTS: Merchant[] = [
     loc: 'Jongno-gu, Seoul',
     rating: 4.9,
     pos: { left: '46%', top: '74%' },
-    image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4',
+    image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427',
   },
   {
     id: 'm5',
@@ -54,7 +54,7 @@ export const MERCHANTS: Merchant[] = [
     loc: 'Insadong, Seoul',
     rating: 4.8,
     pos: { left: '18%', top: '66%' },
-    image: 'https://images.unsplash.com/photo-1541544741938-0af808871cc0',
+    image: 'https://images.unsplash.com/photo-1590301157890-4810ed352733',
   },
   {
     id: 'm6',

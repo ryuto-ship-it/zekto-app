@@ -4,14 +4,14 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts, radii, categoryLabels } from '../theme/theme';
 import { PRODUCTS, Category } from '../data/products';
-import { won, finalPrice } from '../utils/format';
+import { won } from '../utils/format';
 import PriceLadder from '../components/PriceLadder';
 import Chip from '../components/Chip';
 import { PickCard, DealCard } from '../components/ProductCard';
 import { SearchIcon } from '../components/Icons';
 import { RootStackParamList } from '../navigation/types';
 
-const HERO_PRICE = { was: 95000, cash: 93000, coin: 90000 };
+const HERO_PRICE = { card: 95000, cash: 94050, coin: 92150 };
 
 type Filter = 'all' | Category;
 
@@ -44,17 +44,18 @@ export default function DiscoverScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <View style={styles.hero}>
-        <Text style={styles.eyebrow}>FUTURE PASS · PRE-PAY & SAVE</Text>
-        <Text style={styles.heroTitle}>Book Korea before you fly. Pay less with stablecoin.</Text>
+        <Text style={styles.eyebrow}>FUTURE PASS · WORKS WHEN CARDS DON'T</Text>
+        <Text style={styles.heroTitle}>Card declined in Korea? Prepay with stablecoin instead.</Text>
         <PriceLadder
           rows={[
-            { label: 'Card', amount: HERO_PRICE.was, widthPct: 96, kind: 'card' },
-            { label: 'Cash', amount: HERO_PRICE.cash, widthPct: 90, kind: 'cash' },
-            { label: 'Stablecoin', amount: HERO_PRICE.coin, widthPct: 80, kind: 'coin' },
+            { label: 'Card', amount: HERO_PRICE.card, widthPct: 96, kind: 'card' },
+            { label: 'Cash', amount: HERO_PRICE.cash, widthPct: 93, kind: 'cash' },
+            { label: 'Stablecoin', amount: HERO_PRICE.coin, widthPct: 90, kind: 'coin' },
           ]}
           variant="hero"
-          bestText={`BEST · ${won(HERO_PRICE.was - HERO_PRICE.coin)} CHEAPER`}
+          bestText={`ALWAYS ACCEPTED · ${won(HERO_PRICE.card - HERO_PRICE.coin)} CHEAPER`}
         />
+        <Text style={styles.heroCaption}>We split the card-network fee we save with you.</Text>
       </View>
 
       <View style={styles.searchWrap}>
@@ -119,6 +120,7 @@ const styles = StyleSheet.create({
   },
   eyebrow: { fontFamily: fonts.monoMedium, fontSize: 10.5, letterSpacing: 1.4, color: colors.goldTint, opacity: 0.85 },
   heroTitle: { fontFamily: fonts.serifMedium, fontSize: 23, lineHeight: 28, color: colors.white, marginTop: 8, marginBottom: 14, maxWidth: 250 },
+  heroCaption: { fontSize: 10.5, color: '#C9D6CE', marginTop: 8, fontFamily: fonts.sans },
   searchWrap: { marginHorizontal: 20, marginTop: 16, marginBottom: 4 },
   searchBar: {
     flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.white,
