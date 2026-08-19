@@ -12,7 +12,7 @@ const Tab = createBottomTabNavigator<TabParamList>();
 export default function TabNavigator() {
   return (
     <Tab.Navigator
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ headerShown: false, animation: 'shift' }}
       tabBar={(props) => <BottomTabBar {...props} />}
     >
       <Tab.Screen name="Discover" component={DiscoverScreen} />

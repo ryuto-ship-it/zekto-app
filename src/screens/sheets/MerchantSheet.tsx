@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors, fonts, categoryLabels } from '../../theme/theme';
+import { colors, fonts, categoryLabels, categoryAccents } from '../../theme/theme';
 import { getMerchant } from '../../data/merchants';
 import { getProductsByMerchant } from '../../data/products';
 import { imgUrl } from '../../utils/format';
@@ -22,7 +22,7 @@ export default function MerchantSheet() {
     <Sheet onClose={() => navigation.goBack()}>
       <Image source={{ uri: imgUrl(merchant.image, 780) }} style={styles.cover} resizeMode="cover" />
       <View style={styles.head}>
-        <Text style={styles.cat}>{categoryLabels[merchant.cat]}</Text>
+        <Text style={[styles.cat, { color: categoryAccents[merchant.cat] }]}>{categoryLabels[merchant.cat]}</Text>
         <Text style={styles.name}>{merchant.name}</Text>
         <View style={styles.metaRow}>
           <Text style={styles.stars}>★★★★★</Text>

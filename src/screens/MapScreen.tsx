@@ -1,35 +1,29 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, ScrollView, Pressable, Animated, StyleSheet, LayoutChangeEvent } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, ScrollView, Pressable, Animated, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors, fonts, radii, categoryLabels } from '../theme/theme';
-import { MERCHANTS, Merchant, merchantBestCoinPct, merchantDist } from '../data/merchants';
+import { colors, fonts, radii, categoryLabels, categoryAccents } from '../theme/theme';
+import { MERCHANTS, merchantBestCoinPct, merchantDist } from '../data/merchants';
 import { Category } from '../data/products';
 import Chip from '../components/Chip';
+import SeoulMapView from '../components/SeoulMapView';
+import { CategoryIcon, DiscoverIcon } from '../components/Icons';
 import { RootStackParamList } from '../navigation/types';
 
-const GRID_GAP = 28;
 const LIVE_BASE = 128;
 
 type Filter = 'all' | Category;
 
-const CHIPS: { key: Filter; label: string }[] = [
+const CHIPS: { key: Filter; label: string; cat?: Category }[] = [
   { key: 'all', label: 'All' },
-  { key: 'beauty', label: '💉 Beauty & Medical' },
-  { key: 'hotel', label: '🛏 Hotels' },
-  { key: 'dining', label: '🍽 Dining' },
+  { key: 'beauty', label: 'Beauty & Medical', cat: 'beauty' },
+  { key: 'hotel', label: 'Hotels', cat: 'hotel' },
+  { key: 'dining', label: 'Dining', cat: 'dining' },
 ];
-
-const PIN_COLOR: Record<Category, string> = {
-  beauty: colors.coral,
-  hotel: colors.jade,
-  dining: colors.gold,
-};
 
 export default function MapScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [filter, setFilter] = useState<Filter>('all');
-  const [size, setSize] = useState({ width: 0, height: 0 });
   const [liveCount, setLiveCount] = useState(LIVE_BASE);
 
   useEffect(() => {
@@ -40,15 +34,7 @@ export default function MapScreen() {
     return () => clearInterval(timer);
   }, []);
 
-  const onLayout = useCallback((e: LayoutChangeEvent) => {
-    const { width, height } = e.nativeEvent.layout;
-    setSize({ width, height });
-  }, []);
-
-  const vLines = size.width ? Math.ceil(size.width / GRID_GAP) : 0;
-  const hLines = size.height ? Math.ceil(size.height / GRID_GAP) : 0;
-
-  const merchants = useMemo(() => (filter === 'all' ? MERCHANTS : MERCHANTS.filter((m) => m.cat === filter)), [filter]);
+  const merchants = filter === 'all' ? MERCHANTS : MERCHANTS.filter((m) => m.cat === filter);
 
   const openMerchant = (merchantId: string) => navigation.navigate('Merchant', { merchantId });
 
@@ -65,29 +51,22 @@ export default function MapScreen() {
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow} contentContainerStyle={styles.chipRowContent}>
-        {CHIPS.map((c) => (
-          <Chip key={c.key} label={c.label} active={filter === c.key} onPress={() => setFilter(c.key)} />
-        ))}
+        {CHIPS.map((c) => {
+          const active = filter === c.key;
+          const activeColor = c.cat ? categoryAccents[c.cat] : colors.jade;
+          const icon = c.cat ? (
+            <CategoryIcon cat={c.cat} size={20} color={active ? colors.white : activeColor} strokeWidth={2} />
+          ) : (
+            <DiscoverIcon size={20} color={active ? colors.white : colors.jade} strokeWidth={2} />
+          );
+          return (
+            <Chip key={c.key} label={c.label} icon={icon} active={active} activeColor={activeColor} onPress={() => setFilter(c.key)} />
+          );
+        })}
       </ScrollView>
 
-      <View style={styles.mapArea} onLayout={onLayout}>
-        {Array.from({ length: vLines }).map((_, i) => (
-          <View key={`v${i}`} style={[styles.gridLineV, { left: i * GRID_GAP }]} />
-        ))}
-        {Array.from({ length: hLines }).map((_, i) => (
-          <View key={`h${i}`} style={[styles.gridLineH, { top: i * GRID_GAP }]} />
-        ))}
-
-        <View style={[styles.pin, { left: '50%', top: '58%' }]}>
-          <View style={[styles.pinDot, styles.pinDotYou]}>
-            <Text style={styles.pinDotText}>YOU</Text>
-          </View>
-        </View>
-
-        {merchants.map((m) => (
-          <MapPin key={m.id} merchant={m} onPress={() => openMerchant(m.id)} />
-        ))}
-
+      <View style={styles.mapArea}>
+        <SeoulMapView merchants={merchants} onPressMerchant={openMerchant} />
         <View style={styles.mapHint}>
           <Text style={styles.mapHintText}>📍 Myeongdong, Seoul</Text>
         </View>
@@ -100,7 +79,7 @@ export default function MapScreen() {
       <View style={styles.list}>
         {merchants.map((m) => (
           <Pressable key={m.id} style={styles.row} onPress={() => openMerchant(m.id)}>
-            <View style={[styles.rowThumb, { backgroundColor: PIN_COLOR[m.cat] }]} />
+            <View style={[styles.rowThumb, { backgroundColor: categoryAccents[m.cat] }]} />
             <View style={{ flex: 1 }}>
               <View style={styles.rowTitleRow}>
                 <Text style={styles.rowTitle}>{m.name}</Text>
@@ -137,39 +116,6 @@ function PulsingDot() {
   return <Animated.View style={[styles.liveDot, { opacity }]} />;
 }
 
-function MapPin({ merchant, onPress }: { merchant: Merchant; onPress: () => void }) {
-  const scale = useRef(new Animated.Value(0.4)).current;
-  const ringOpacity = useRef(new Animated.Value(0.55)).current;
-  const color = PIN_COLOR[merchant.cat];
-
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.parallel([
-        Animated.timing(scale, { toValue: 1.9, duration: 2200, useNativeDriver: true }),
-        Animated.timing(ringOpacity, { toValue: 0, duration: 2200, useNativeDriver: true }),
-      ])
-    );
-    loop.start();
-    return () => {
-      loop.stop();
-      scale.setValue(0.4);
-      ringOpacity.setValue(0.55);
-    };
-  }, [scale, ringOpacity]);
-
-  return (
-    <Pressable style={[styles.pin, { left: merchant.pos.left, top: merchant.pos.top }]} onPress={onPress}>
-      <Animated.View style={[styles.pulseRing, { backgroundColor: color, opacity: ringOpacity, transform: [{ scale }] }]} />
-      <View style={[styles.pinDot, { backgroundColor: color }]}>
-        <Text style={styles.pinDotText}>-{merchantBestCoinPct(merchant.id)}%</Text>
-      </View>
-      <View style={styles.pinLabel}>
-        <Text style={styles.pinLabelText}>✓ {merchant.name.split(' ')[0]}</Text>
-      </View>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   content: { paddingBottom: 32 },
@@ -187,23 +133,15 @@ const styles = StyleSheet.create({
     height: 300,
     borderRadius: radii.xl,
     overflow: 'hidden',
-    backgroundColor: '#DCE6DA',
+    backgroundColor: '#E7EEE2',
     borderWidth: 1,
     borderColor: colors.line,
+    shadowColor: colors.ink,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.14,
+    shadowRadius: 16,
+    elevation: 6,
   },
-  gridLineV: { position: 'absolute', top: 0, bottom: 0, width: 1, backgroundColor: 'rgba(47,107,90,0.10)' },
-  gridLineH: { position: 'absolute', left: 0, right: 0, height: 1, backgroundColor: 'rgba(47,107,90,0.10)' },
-  pin: { position: 'absolute', alignItems: 'center', transform: [{ translateX: -20 }, { translateY: -40 }] },
-  pulseRing: { position: 'absolute', bottom: 0, alignSelf: 'center', width: 30, height: 30, borderRadius: 15 },
-  pinDot: {
-    width: 32, height: 32, borderRadius: 16, borderBottomRightRadius: 0,
-    backgroundColor: colors.jade, transform: [{ rotate: '45deg' }], alignItems: 'center', justifyContent: 'center',
-    borderWidth: 2, borderColor: 'rgba(255,255,255,0.6)',
-  },
-  pinDotYou: { backgroundColor: colors.ink },
-  pinDotText: { color: colors.white, fontSize: 9, fontFamily: fonts.sansBold, transform: [{ rotate: '-45deg' }] },
-  pinLabel: { marginTop: 4, backgroundColor: colors.white, paddingVertical: 2, paddingHorizontal: 6, borderRadius: 6 },
-  pinLabelText: { fontSize: 9.5, fontFamily: fonts.sansBold, color: colors.ink },
   mapHint: {
     position: 'absolute', left: 12, bottom: 12, backgroundColor: 'rgba(255,255,255,0.92)',
     paddingVertical: 6, paddingHorizontal: 10, borderRadius: 10,

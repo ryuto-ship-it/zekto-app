@@ -1,12 +1,14 @@
 import { Category, getProductsByMerchant } from './products';
 
+export type Coords = { latitude: number; longitude: number };
+
 export type Merchant = {
   id: string;
   name: string;
   cat: Category;
   loc: string;
   rating: number;
-  pos: { left: `${number}%`; top: `${number}%` };
+  coords: Coords;
   image: string;
 };
 
@@ -17,7 +19,7 @@ export const MERCHANTS: Merchant[] = [
     cat: 'beauty',
     loc: 'Gangnam-gu, Seoul',
     rating: 4.9,
-    pos: { left: '30%', top: '28%' },
+    coords: { latitude: 37.5178, longitude: 127.0485 },
     image: 'https://images.unsplash.com/photo-1590439471364-192aa70c0b53',
   },
   {
@@ -26,7 +28,7 @@ export const MERCHANTS: Merchant[] = [
     cat: 'beauty',
     loc: 'Apgujeong, Seoul',
     rating: 4.8,
-    pos: { left: '64%', top: '20%' },
+    coords: { latitude: 37.5274, longitude: 127.0286 },
     image: 'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c',
   },
   {
@@ -35,7 +37,7 @@ export const MERCHANTS: Merchant[] = [
     cat: 'hotel',
     loc: 'Myeongdong, Seoul',
     rating: 4.7,
-    pos: { left: '70%', top: '40%' },
+    coords: { latitude: 37.5636, longitude: 126.9850 },
     image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32',
   },
   {
@@ -44,7 +46,7 @@ export const MERCHANTS: Merchant[] = [
     cat: 'hotel',
     loc: 'Jongno-gu, Seoul',
     rating: 4.9,
-    pos: { left: '46%', top: '74%' },
+    coords: { latitude: 37.5826, longitude: 126.9838 },
     image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427',
   },
   {
@@ -53,7 +55,7 @@ export const MERCHANTS: Merchant[] = [
     cat: 'dining',
     loc: 'Insadong, Seoul',
     rating: 4.8,
-    pos: { left: '18%', top: '66%' },
+    coords: { latitude: 37.5740, longitude: 126.9857 },
     image: 'https://images.unsplash.com/photo-1590301157890-4810ed352733',
   },
   {
@@ -62,7 +64,7 @@ export const MERCHANTS: Merchant[] = [
     cat: 'dining',
     loc: 'Yongsan-gu, Seoul',
     rating: 4.6,
-    pos: { left: '82%', top: '68%' },
+    coords: { latitude: 37.5311, longitude: 126.9810 },
     image: 'https://images.unsplash.com/photo-1544025162-d76694265947',
   },
   {
@@ -71,7 +73,7 @@ export const MERCHANTS: Merchant[] = [
     cat: 'dining',
     loc: 'Cheongdam-dong, Seoul',
     rating: 4.9,
-    pos: { left: '56%', top: '54%' },
+    coords: { latitude: 37.5202, longitude: 127.0473 },
     image: 'https://images.unsplash.com/photo-1615361200141-f45040f367be',
   },
   {
@@ -80,10 +82,22 @@ export const MERCHANTS: Merchant[] = [
     cat: 'dining',
     loc: 'Seocho-gu, Seoul',
     rating: 4.9,
-    pos: { left: '40%', top: '46%' },
+    coords: { latitude: 37.4837, longitude: 127.0324 },
     image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9',
   },
 ];
+
+// "You" marker — placed in Myeongdong, the default map center.
+export const YOU_COORDS: Coords = { latitude: 37.5615, longitude: 126.9865 };
+
+// Bounding box the fallback (web) map and the native map's initial region are
+// both fit to, so every merchant pin lands on-screen without manual per-pin tuning.
+export const MAP_BOUNDS = {
+  minLat: 37.478,
+  maxLat: 37.592,
+  minLng: 126.905,
+  maxLng: 127.065,
+};
 
 export function getMerchant(id: string): Merchant | undefined {
   return MERCHANTS.find((m) => m.id === id);

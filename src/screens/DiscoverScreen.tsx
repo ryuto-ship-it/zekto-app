@@ -1,15 +1,16 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, TextInput, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors, fonts, radii, categoryLabels } from '../theme/theme';
+import { colors, fonts, radii, shadows, categoryLabels, categoryAccents } from '../theme/theme';
 import { PRODUCTS, Category } from '../data/products';
 import { won } from '../utils/format';
 import PriceLadder from '../components/PriceLadder';
 import Chip from '../components/Chip';
 import { PickCard, DealCard } from '../components/ProductCard';
 import { ResaleCard } from '../components/ResaleCard';
-import { SearchIcon } from '../components/Icons';
+import { SearchIcon, CategoryIcon, DiscoverIcon } from '../components/Icons';
 import { useApp } from '../context/AppContext';
 import { RootStackParamList } from '../navigation/types';
 
@@ -17,12 +18,12 @@ const HERO_PRICE = { card: 95000, cash: 94050, coin: 92150 };
 
 type Filter = 'all' | Category | 'resale';
 
-const CHIPS: { key: Filter; label: string }[] = [
+const CHIPS: { key: Filter; label: string; cat?: Category }[] = [
   { key: 'all', label: 'All' },
-  { key: 'beauty', label: '💉 Beauty & Medical' },
-  { key: 'hotel', label: '🛏 Hotels' },
-  { key: 'dining', label: '🍽 Dining' },
-  { key: 'resale', label: '🔁 Resale' },
+  { key: 'beauty', label: 'Beauty & Medical', cat: 'beauty' },
+  { key: 'hotel', label: 'Hotels', cat: 'hotel' },
+  { key: 'dining', label: 'Dining', cat: 'dining' },
+  { key: 'resale', label: 'Resale' },
 ];
 
 export default function DiscoverScreen() {
@@ -48,7 +49,10 @@ export default function DiscoverScreen() {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      <View style={styles.hero}>
+      <LinearGradient colors={['#1F4B3F', '#2F6B5A', '#256456']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
+        <View style={[styles.blob, styles.blobGold]} />
+        <View style={[styles.blob, styles.blobMint]} />
+        <View style={[styles.blob, styles.blobSmall]} />
         <Text style={styles.eyebrow}>FUTURE PASS · WORKS WHEN CARDS DON'T</Text>
         <Text style={styles.heroTitle}>Card declined in Korea? Prepay with stablecoin instead.</Text>
         <PriceLadder
@@ -61,7 +65,7 @@ export default function DiscoverScreen() {
           bestText={`ALWAYS ACCEPTED · ${won(HERO_PRICE.card - HERO_PRICE.coin)} CHEAPER`}
         />
         <Text style={styles.heroCaption}>We split the card-network fee we save with you.</Text>
-      </View>
+      </LinearGradient>
 
       <View style={styles.searchWrap}>
         <View style={styles.searchBar}>
@@ -77,9 +81,25 @@ export default function DiscoverScreen() {
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow} contentContainerStyle={styles.chipRowContent}>
-        {CHIPS.map((c) => (
-          <Chip key={c.key} label={c.label} active={filter === c.key} onPress={() => setFilter(c.key)} />
-        ))}
+        {CHIPS.map((c) => {
+          const active = filter === c.key;
+          const activeColor = c.cat ? categoryAccents[c.cat] : c.key === 'resale' ? colors.gold : colors.jade;
+          const icon = c.cat ? (
+            <CategoryIcon cat={c.cat} size={20} color={active ? colors.white : activeColor} strokeWidth={2} />
+          ) : c.key === 'all' ? (
+            <DiscoverIcon size={20} color={active ? colors.white : colors.jade} strokeWidth={2} />
+          ) : null;
+          return (
+            <Chip
+              key={c.key}
+              label={c.key === 'resale' ? '🔁 ' + c.label : c.label}
+              icon={icon}
+              active={active}
+              activeColor={activeColor}
+              onPress={() => setFilter(c.key)}
+            />
+          );
+        })}
       </ScrollView>
 
       {filter === 'resale' ? (
@@ -116,9 +136,11 @@ export default function DiscoverScreen() {
             <Text style={styles.sectionTitle}>{filter === 'all' ? 'All benefits' : categoryLabels[filter]}</Text>
             <Text style={styles.sectionSub}>{list.length} available</Text>
           </View>
-          <View style={styles.dealList}>
+          <View style={styles.dealGrid}>
             {list.map((p) => (
-              <DealCard key={p.id} product={p} onPress={() => openDetail(p.id)} />
+              <View key={p.id} style={styles.gridItem}>
+                <DealCard product={p} onPress={() => openDetail(p.id)} gridWidth />
+              </View>
             ))}
             {list.length === 0 ? (
               <View style={styles.emptyState}>
@@ -139,14 +161,19 @@ const styles = StyleSheet.create({
   hero: {
     margin: 20,
     marginBottom: 6,
-    padding: 18,
-    paddingTop: 20,
-    backgroundColor: colors.jadeDeep,
-    borderRadius: radii.xl,
+    padding: 20,
+    paddingTop: 22,
+    borderRadius: radii.xxl,
     overflow: 'hidden',
+    position: 'relative',
+    ...shadows.cardLarge,
   },
-  eyebrow: { fontFamily: fonts.monoMedium, fontSize: 10.5, letterSpacing: 1.4, color: colors.goldTint, opacity: 0.85 },
-  heroTitle: { fontFamily: fonts.serifMedium, fontSize: 23, lineHeight: 28, color: colors.white, marginTop: 8, marginBottom: 14, maxWidth: 250 },
+  blob: { position: 'absolute', borderRadius: 999 },
+  blobGold: { width: 180, height: 180, top: -70, right: -50, backgroundColor: 'rgba(232,169,59,0.35)' },
+  blobMint: { width: 140, height: 140, bottom: -60, left: -40, backgroundColor: 'rgba(125,211,222,0.18)' },
+  blobSmall: { width: 70, height: 70, top: 40, right: 30, backgroundColor: 'rgba(255,255,255,0.10)' },
+  eyebrow: { fontFamily: fonts.monoMedium, fontSize: 10.5, letterSpacing: 1.4, color: colors.goldTint, opacity: 0.9 },
+  heroTitle: { fontFamily: fonts.serifBold, fontSize: 28, lineHeight: 33, color: colors.white, marginTop: 10, marginBottom: 16, maxWidth: 260 },
   heroCaption: { fontSize: 10.5, color: '#C9D6CE', marginTop: 8, fontFamily: fonts.sans },
   searchWrap: { marginHorizontal: 20, marginTop: 16, marginBottom: 4 },
   searchBar: {
@@ -161,6 +188,8 @@ const styles = StyleSheet.create({
   sectionSub: { fontSize: 11.5, color: colors.jade, fontFamily: fonts.sansBold },
   pickScroll: { paddingHorizontal: 20, gap: 12 },
   dealList: { paddingHorizontal: 20, gap: 12 },
+  dealGrid: { paddingHorizontal: 20, flexDirection: 'row', flexWrap: 'wrap', gap: 14 },
+  gridItem: { width: '47%' },
   emptyState: { alignItems: 'center', paddingVertical: 40 },
   emptyTitle: { fontFamily: fonts.serif, fontSize: 16, color: colors.ink, marginBottom: 6 },
   emptyText: { fontSize: 12.5, color: colors.inkSoft },

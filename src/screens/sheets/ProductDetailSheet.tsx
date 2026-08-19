@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors, fonts, radii, categoryLabels } from '../../theme/theme';
+import { colors, fonts, radii, shadows, categoryLabels, categoryAccents } from '../../theme/theme';
 import { getProduct } from '../../data/products';
 import { won, finalPrice, imgUrl } from '../../utils/format';
 import Sheet from '../../components/Sheet';
@@ -52,7 +52,7 @@ export default function ProductDetailSheet() {
       <Image source={{ uri: imgUrl(product.image, 780) }} style={styles.hero} resizeMode="cover" />
       <View style={styles.body}>
         <View style={styles.catRow}>
-          <Text style={styles.cat}>{categoryLabels[product.cat]}</Text>
+          <Text style={[styles.cat, { color: categoryAccents[product.cat] }]}>{categoryLabels[product.cat]}</Text>
           {listing ? (
             <View style={styles.resaleTag}>
               <Text style={styles.resaleTagText}>RESALE</Text>
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     paddingVertical: 7, paddingHorizontal: 12,
   },
   reasonChipText: { fontSize: 11.5, color: colors.jadeDeep, fontFamily: fonts.sansBold },
-  ladderCard: { backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line, borderRadius: 16, padding: 14, marginVertical: 14 },
+  ladderCard: { backgroundColor: colors.white, borderRadius: radii.xl, padding: 16, marginVertical: 14, ...shadows.card },
   ladderCap: { fontSize: 10.5, textTransform: 'uppercase', letterSpacing: 0.6, color: colors.inkSoft, fontFamily: fonts.sansBold, marginBottom: 10 },
   ladderNote: { fontSize: 10.5, color: colors.inkSoft, marginTop: 10, fontFamily: fonts.sans },
   chainBadge: { alignSelf: 'flex-start', marginTop: 10, backgroundColor: colors.jadeTint, borderRadius: radii.sm, paddingVertical: 4, paddingHorizontal: 8 },

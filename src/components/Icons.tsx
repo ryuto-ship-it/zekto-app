@@ -153,3 +153,31 @@ export function DocIcon({ size = 15, color = '#1F4B3F' }: IconProps) {
     </Svg>
   );
 }
+
+export function CardPaymentIcon({ size = 14, color = '#C9D6CE' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Rect x={2.5} y={5} width={19} height={14} rx={2.5} stroke={color} strokeWidth={1.8} />
+      <Path d="M2.5 9.5h19" stroke={color} strokeWidth={1.8} />
+      <Path d="M6 15h4" stroke={color} strokeWidth={1.8} strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+export function CashPaymentIcon({ size = 14, color = '#C9D6CE' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Rect x={2} y={6} width={20} height={12} rx={2} stroke={color} strokeWidth={1.8} />
+      <Circle cx={12} cy={12} r={3} stroke={color} strokeWidth={1.8} />
+    </Svg>
+  );
+}
+
+export function CoinPaymentIcon({ size = 14, color = '#E8A93B' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx={12} cy={12} r={9} stroke={color} strokeWidth={1.8} />
+      <Path d="M12 7v10M9.5 9.3c0-1.3 1.1-2.1 2.5-2.1s2.5.8 2.5 1.9-1 1.6-2.5 1.9-2.5.9-2.5 2 1.1 1.9 2.5 1.9 2.5-.7 2.5-1.9" stroke={color} strokeWidth={1.6} strokeLinecap="round" />
+    </Svg>
+  );
+}

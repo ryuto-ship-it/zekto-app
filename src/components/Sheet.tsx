@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react';
-import { View, Pressable, ScrollView, StyleSheet } from 'react-native';
+import React, { ReactNode, useEffect, useRef } from 'react';
+import { View, Pressable, ScrollView, Animated, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, radii } from '../theme/theme';
 import { CloseIcon } from './Icons';
@@ -21,10 +21,22 @@ export default function Sheet({
     ? { contentContainerStyle: { paddingBottom: 24 }, showsVerticalScrollIndicator: false }
     : {};
 
+  const translateY = useRef(new Animated.Value(48)).current;
+  const backdropOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(backdropOpacity, { toValue: 1, duration: 220, useNativeDriver: true }).start();
+    Animated.spring(translateY, { toValue: 0, useNativeDriver: true, speed: 16, bounciness: 9 }).start();
+  }, [backdropOpacity, translateY]);
+
   return (
     <View style={styles.root}>
-      <Pressable style={styles.backdrop} onPress={onClose} />
-      <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+      <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
+      </Animated.View>
+      <Animated.View
+        style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 16), transform: [{ translateY }] }]}
+      >
         <Pressable style={styles.closeBtn} onPress={onClose} hitSlop={10}>
           <CloseIcon size={13} />
         </Pressable>
@@ -33,7 +45,7 @@ export default function Sheet({
           {children}
         </Content>
         {footer ? <View style={styles.footer}>{footer}</View> : null}
-      </View>
+      </Animated.View>
     </View>
   );
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
-import { colors, fonts, radii, categoryLabels } from '../theme/theme';
+import { colors, fonts, radii, shadows, categoryLabels, categoryAccents } from '../theme/theme';
 import { Pass } from '../context/AppContext';
 import { imgUrl, won } from '../utils/format';
 
@@ -21,7 +21,7 @@ export default function PassCard({
       <View style={styles.top}>
         <Image source={{ uri: imgUrl(pass.image, 120) }} style={styles.thumb} resizeMode="cover" />
         <View style={styles.info}>
-          <Text style={styles.cat}>{categoryLabels[pass.cat]}</Text>
+          <Text style={[styles.cat, { color: categoryAccents[pass.cat] }]}>{categoryLabels[pass.cat]}</Text>
           <Text style={styles.title} numberOfLines={2}>{pass.title}</Text>
           <Text style={styles.merchant} numberOfLines={1}>{pass.merchant}</Text>
         </View>
@@ -77,9 +77,8 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.white,
     borderRadius: radii.xl,
-    borderWidth: 1,
-    borderColor: colors.line,
     overflow: 'hidden',
+    ...shadows.card,
   },
   cardUsed: { opacity: 0.5 },
   top: { flexDirection: 'row', gap: 12, padding: 14, paddingBottom: 12 },

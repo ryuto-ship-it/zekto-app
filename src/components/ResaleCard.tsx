@@ -1,17 +1,19 @@
 import React from 'react';
-import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
-import { colors, fonts, radii, categoryLabels } from '../theme/theme';
+import { View, Text, Image, StyleSheet } from 'react-native';
+import { colors, fonts, radii, shadows, categoryLabels, categoryAccents } from '../theme/theme';
 import { won, imgUrl } from '../utils/format';
 import { ResaleListing } from '../data/resale';
+import { AnimatedPressable } from './AnimatedCard';
 
 export function ResaleCard({ listing, onPress }: { listing: ResaleListing; onPress: () => void }) {
   const pct = Math.round((listing.resalePrice / listing.originalPrice) * 100);
+  const accent = categoryAccents[listing.cat];
   return (
-    <Pressable style={styles.card} onPress={onPress}>
+    <AnimatedPressable style={styles.card} onPress={onPress}>
       <Image source={{ uri: imgUrl(listing.image, 160) }} style={styles.thumb} resizeMode="cover" />
       <View style={styles.info}>
         <View style={styles.topRow}>
-          <Text style={styles.cat}>{categoryLabels[listing.cat]}</Text>
+          <Text style={[styles.cat, { color: accent }]}>{categoryLabels[listing.cat]}</Text>
           <View style={styles.ribbon}>
             <Text style={styles.ribbonText}>RESALE</Text>
           </View>
@@ -28,22 +30,22 @@ export function ResaleCard({ listing, onPress }: { listing: ResaleListing; onPre
           </View>
         </View>
       </View>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: 'row', gap: 12, backgroundColor: colors.white, borderWidth: 1.5,
-    borderColor: colors.gold, borderRadius: radii.lg, padding: 12,
+    flexDirection: 'row', gap: 12, backgroundColor: colors.white,
+    borderRadius: radii.xl, padding: 12, ...shadows.card,
   },
-  thumb: { width: 74, height: 74, borderRadius: 12, backgroundColor: colors.paper },
+  thumb: { width: 82, height: 82, borderRadius: 14, backgroundColor: colors.paper },
   info: { flex: 1, minWidth: 0 },
   topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  cat: { fontSize: 9.5, textTransform: 'uppercase', letterSpacing: 0.8, color: colors.jade, fontFamily: fonts.sansBold },
+  cat: { fontSize: 9.5, textTransform: 'uppercase', letterSpacing: 0.8, fontFamily: fonts.sansBold },
   ribbon: { backgroundColor: colors.gold, borderRadius: 5, paddingVertical: 2, paddingHorizontal: 6 },
   ribbonText: { fontSize: 9, fontFamily: fonts.sansBold, color: colors.jadeDeep, letterSpacing: 0.4 },
-  title: { fontSize: 13.5, fontFamily: fonts.sansBold, color: colors.ink, marginTop: 2, marginBottom: 2, lineHeight: 17 },
+  title: { fontSize: 13.5, fontFamily: fonts.sansExtraBold, color: colors.ink, marginTop: 2, marginBottom: 2, lineHeight: 17 },
   seller: { fontSize: 11, color: colors.inkSoft, fontFamily: fonts.sans },
   bottom: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 },
   priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: 5 },
