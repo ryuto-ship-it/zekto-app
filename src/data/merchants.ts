@@ -65,6 +65,24 @@ export const MERCHANTS: Merchant[] = [
     pos: { left: '82%', top: '68%' },
     image: 'https://images.unsplash.com/photo-1544025162-d76694265947',
   },
+  {
+    id: 'm7',
+    name: 'Sora Edomae Sushi',
+    cat: 'dining',
+    loc: 'Cheongdam-dong, Seoul',
+    rating: 4.9,
+    pos: { left: '56%', top: '54%' },
+    image: 'https://images.unsplash.com/photo-1615361200141-f45040f367be',
+  },
+  {
+    id: 'm8',
+    name: 'Seocho Table',
+    cat: 'dining',
+    loc: 'Seocho-gu, Seoul',
+    rating: 4.9,
+    pos: { left: '40%', top: '46%' },
+    image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9',
+  },
 ];
 
 export function getMerchant(id: string): Merchant | undefined {
