@@ -47,6 +47,11 @@ export default function QRSheet() {
           </View>
         </View>
         <Text style={styles.code}>{pass.code}</Text>
+        <View style={styles.chainNotice}>
+          <Text style={styles.chainNoticeText}>
+            ⛓ This pass was issued directly by {pass.merchant} and recorded on-chain — it can't be forged or duplicated.
+          </Text>
+        </View>
       </View>
     </Sheet>
   );
@@ -69,4 +74,8 @@ const styles = StyleSheet.create({
   qrCellOn: { backgroundColor: colors.ink },
   qrCellOff: { backgroundColor: 'transparent' },
   code: { fontFamily: fonts.monoSemiBold, fontSize: 13, letterSpacing: 1, color: colors.jadeDeep, marginBottom: 8 },
+  chainNotice: {
+    backgroundColor: colors.jadeTint, borderRadius: radii.md, paddingVertical: 10, paddingHorizontal: 14, marginBottom: 4,
+  },
+  chainNoticeText: { fontSize: 10.5, color: colors.jadeDeep, textAlign: 'center', lineHeight: 15, fontFamily: fonts.sans },
 });

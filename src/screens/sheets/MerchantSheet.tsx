@@ -30,6 +30,9 @@ export default function MerchantSheet() {
           <Text style={styles.meta}>·</Text>
           <Text style={styles.meta}>{merchant.loc}</Text>
         </View>
+        <View style={styles.zeroPayRow}>
+          <Text style={styles.zeroPayText}>✓ ZeroPay merchant · connected via the nationwide 2M+ small-business network</Text>
+        </View>
       </View>
       <Text style={styles.cap}>{products.length} products on sale · live</Text>
       <View style={styles.list}>
@@ -49,6 +52,8 @@ const styles = StyleSheet.create({
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
   stars: { color: colors.gold, fontWeight: '700', fontSize: 12 },
   meta: { fontSize: 12, color: colors.inkSoft, fontFamily: fonts.sans },
+  zeroPayRow: { marginTop: 8, backgroundColor: colors.jadeTint, borderRadius: 8, paddingVertical: 6, paddingHorizontal: 10, alignSelf: 'flex-start' },
+  zeroPayText: { fontSize: 10.5, color: colors.jadeDeep, fontFamily: fonts.sansBold },
   cap: {
     marginHorizontal: 20, marginTop: 16, marginBottom: 8, fontSize: 11, textTransform: 'uppercase',
     letterSpacing: 0.6, color: colors.inkSoft, fontFamily: fonts.sansBold,

@@ -2,9 +2,20 @@ import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { colors, fonts, radii, categoryLabels } from '../theme/theme';
 import { Pass } from '../context/AppContext';
-import { imgUrl } from '../utils/format';
+import { imgUrl, won } from '../utils/format';
 
-export default function PassCard({ pass, onPress }: { pass: Pass; onPress: () => void }) {
+export default function PassCard({
+  pass,
+  onPress,
+  onResell,
+  onCancelResale,
+}: {
+  pass: Pass;
+  onPress: () => void;
+  onResell: () => void;
+  onCancelResale: () => void;
+}) {
+  const listed = pass.resaleStatus === 'listed';
   return (
     <Pressable style={[styles.card, pass.used && styles.cardUsed]} onPress={onPress}>
       <View style={styles.top}>
@@ -14,11 +25,25 @@ export default function PassCard({ pass, onPress }: { pass: Pass; onPress: () =>
           <Text style={styles.title} numberOfLines={2}>{pass.title}</Text>
           <Text style={styles.merchant} numberOfLines={1}>{pass.merchant}</Text>
         </View>
-        <View style={[styles.status, pass.used ? styles.statusUsed : styles.statusValid]}>
-          <Text style={[styles.statusText, pass.used ? styles.statusTextUsed : styles.statusTextValid]}>
-            {pass.used ? 'USED' : 'VALID'}
+        <View
+          style={[
+            styles.status,
+            pass.used ? styles.statusUsed : listed ? styles.statusListed : styles.statusValid,
+          ]}
+        >
+          <Text
+            style={[
+              styles.statusText,
+              pass.used ? styles.statusTextUsed : listed ? styles.statusTextListed : styles.statusTextValid,
+            ]}
+          >
+            {pass.used ? 'USED' : listed ? 'LISTED' : 'VALID'}
           </Text>
         </View>
+      </View>
+      <View style={styles.verifiedRow}>
+        <Text style={styles.verifiedText}>⛓ Verified · on-chain issued</Text>
+        {listed && pass.resalePrice ? <Text style={styles.listedPrice}>Asking {won(pass.resalePrice)}</Text> : null}
       </View>
       <View style={styles.perforation}>
         <View style={styles.perfLine} />
@@ -29,6 +54,19 @@ export default function PassCard({ pass, onPress }: { pass: Pass; onPress: () =>
         <Text style={styles.bottomText}>Valid 90 days</Text>
         <Text style={styles.code}>{pass.code}</Text>
       </View>
+      {!pass.used ? (
+        <View style={styles.actionRow}>
+          {listed ? (
+            <Pressable style={styles.actionBtn} onPress={onCancelResale} hitSlop={6}>
+              <Text style={styles.actionBtnText}>Cancel listing</Text>
+            </Pressable>
+          ) : (
+            <Pressable style={styles.actionBtn} onPress={onResell} hitSlop={6}>
+              <Text style={styles.actionBtnText}>Resell</Text>
+            </Pressable>
+          )}
+        </View>
+      ) : null}
     </Pressable>
   );
 }
@@ -53,15 +91,28 @@ const styles = StyleSheet.create({
   status: { paddingVertical: 3, paddingHorizontal: 8, borderRadius: 6, alignSelf: 'flex-start' },
   statusValid: { backgroundColor: colors.jadeTint },
   statusUsed: { backgroundColor: '#EBE7DC' },
+  statusListed: { backgroundColor: colors.goldTint },
   statusText: { fontSize: 10, fontFamily: fonts.sansBold },
   statusTextValid: { color: colors.jadeDeep },
   statusTextUsed: { color: '#8A8375' },
+  statusTextListed: { color: '#7A6023' },
+  verifiedRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 14, marginBottom: 4,
+  },
+  verifiedText: { fontSize: 9.5, color: colors.jade, fontFamily: fonts.sansBold },
+  listedPrice: { fontSize: 9.5, color: '#7A6023', fontFamily: fonts.sansBold },
   perforation: { height: 1, position: 'relative', marginHorizontal: 10 },
   perfLine: { position: 'absolute', left: 0, right: 0, top: 0, borderTopWidth: 1.5, borderColor: colors.line, borderStyle: 'dashed' },
   perfHole: { position: 'absolute', width: HOLE, height: HOLE, borderRadius: HOLE / 2, backgroundColor: colors.paper, top: -HOLE / 2 },
   perfHoleLeft: { left: -HOLE / 2 - 10 },
   perfHoleRight: { right: -HOLE / 2 - 10 },
-  bottom: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingTop: 12, paddingBottom: 14 },
+  bottom: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingTop: 12, paddingBottom: 10 },
   bottomText: { fontSize: 11, color: colors.inkSoft, fontFamily: fonts.sans },
   code: { fontFamily: fonts.monoSemiBold, fontSize: 12, color: colors.jadeDeep },
+  actionRow: { paddingHorizontal: 14, paddingBottom: 12, flexDirection: 'row' },
+  actionBtn: {
+    borderWidth: 1, borderColor: colors.line, borderRadius: radii.pill, paddingVertical: 6, paddingHorizontal: 12,
+  },
+  actionBtnText: { fontSize: 11, fontFamily: fonts.sansBold, color: colors.jadeDeep },
 });

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useMemo, useState, useCallback } from
 import { Product, Category } from '../data/products';
 import { finalPrice } from '../utils/format';
 import { CoinSymbol } from '../types/purchase';
+import { ResaleListing, SEED_RESALE_LISTINGS } from '../data/resale';
 
 export type Pass = {
   uid: number;
@@ -17,6 +18,8 @@ export type Pass = {
   used: boolean;
   coin: CoinSymbol;
   source: string;
+  resaleStatus: 'none' | 'listed';
+  resalePrice?: number;
 };
 
 type AppState = {
@@ -26,6 +29,11 @@ type AppState = {
   markUsed: (uid: number) => void;
   totalSaved: number;
   redeemedCount: number;
+  resaleListings: ResaleListing[];
+  listForResale: (passUid: number, resalePrice: number) => void;
+  cancelResale: (passUid: number) => void;
+  buyResaleListing: (listingId: string, coin: CoinSymbol, sourceLabel: string) => Pass | undefined;
+  resoldCount: number;
 };
 
 const AppContext = createContext<AppState | undefined>(undefined);
@@ -33,6 +41,11 @@ const AppContext = createContext<AppState | undefined>(undefined);
 let uidCounter = 1;
 function nextUid() {
   return uidCounter++;
+}
+
+let resaleUidCounter = 1;
+function nextResaleId() {
+  return `mine-${resaleUidCounter++}`;
 }
 
 function makeCode() {
@@ -43,6 +56,8 @@ function makeCode() {
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [balance, setBalance] = useState(1240);
   const [purchased, setPurchased] = useState<Pass[]>([]);
+  const [resaleListings, setResaleListings] = useState<ResaleListing[]>(SEED_RESALE_LISTINGS);
+  const [resoldCount, setResoldCount] = useState(0);
 
   const purchasePass = useCallback((product: Product, coin: CoinSymbol, sourceLabel: string): Pass => {
     const price = finalPrice(product.price, product.coinPct);
@@ -60,6 +75,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       used: false,
       coin,
       source: sourceLabel,
+      resaleStatus: 'none',
     };
     setPurchased((prev) => [pass, ...prev]);
     // Coin price is quoted in KRW in the mock data; balance is tracked in USDT for
@@ -72,12 +88,113 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setPurchased((prev) => prev.map((p) => (p.uid === uid ? { ...p, used: true } : p)));
   }, []);
 
+  const listForResale = useCallback(
+    (passUid: number, resalePrice: number) => {
+      const pass = purchased.find((p) => p.uid === passUid);
+      if (!pass) return;
+      setPurchased((prev) =>
+        prev.map((p) => (p.uid === passUid ? { ...p, resaleStatus: 'listed', resalePrice } : p))
+      );
+      setResaleListings((list) => [
+        {
+          id: nextResaleId(),
+          productId: pass.productId,
+          title: pass.title,
+          merchant: pass.merchant,
+          loc: pass.loc,
+          cat: pass.cat,
+          image: pass.image,
+          originalPrice: pass.price,
+          resalePrice,
+          sellerLabel: 'You',
+          ownPassUid: pass.uid,
+        },
+        ...list,
+      ]);
+    },
+    [purchased]
+  );
+
+  const cancelResale = useCallback((passUid: number) => {
+    setPurchased((prev) =>
+      prev.map((p) => (p.uid === passUid ? { ...p, resaleStatus: 'none', resalePrice: undefined } : p))
+    );
+    setResaleListings((prev) => prev.filter((l) => l.ownPassUid !== passUid));
+  }, []);
+
+  const buyResaleListing = useCallback(
+    (listingId: string, coin: CoinSymbol, sourceLabel: string): Pass | undefined => {
+      let bought: Pass | undefined;
+      setResaleListings((prev) => {
+        const listing = prev.find((l) => l.id === listingId);
+        if (!listing) return prev;
+
+        const pass: Pass = {
+          uid: nextUid(),
+          productId: listing.productId,
+          title: listing.title,
+          merchant: listing.merchant,
+          loc: listing.loc,
+          cat: listing.cat,
+          image: listing.image,
+          price: listing.resalePrice,
+          saved: listing.originalPrice - listing.resalePrice,
+          code: makeCode(),
+          used: false,
+          coin,
+          source: sourceLabel,
+          resaleStatus: 'none',
+        };
+        bought = pass;
+
+        setPurchased((prevPassed) => {
+          const withoutSellerCopy = listing.ownPassUid
+            ? prevPassed.filter((p) => p.uid !== listing.ownPassUid)
+            : prevPassed;
+          return [pass, ...withoutSellerCopy];
+        });
+        setBalance((prevBalance) => Math.max(0, prevBalance - listing.resalePrice / 1300));
+        if (listing.ownPassUid) {
+          setResoldCount((c) => c + 1);
+        }
+
+        return prev.filter((l) => l.id !== listingId);
+      });
+      return bought;
+    },
+    []
+  );
+
   const totalSaved = useMemo(() => purchased.reduce((s, p) => s + p.saved, 0), [purchased]);
   const redeemedCount = useMemo(() => purchased.filter((p) => p.used).length, [purchased]);
 
   const value = useMemo(
-    () => ({ balance, purchased, purchasePass, markUsed, totalSaved, redeemedCount }),
-    [balance, purchased, purchasePass, markUsed, totalSaved, redeemedCount]
+    () => ({
+      balance,
+      purchased,
+      purchasePass,
+      markUsed,
+      totalSaved,
+      redeemedCount,
+      resaleListings,
+      listForResale,
+      cancelResale,
+      buyResaleListing,
+      resoldCount,
+    }),
+    [
+      balance,
+      purchased,
+      purchasePass,
+      markUsed,
+      totalSaved,
+      redeemedCount,
+      resaleListings,
+      listForResale,
+      cancelResale,
+      buyResaleListing,
+      resoldCount,
+    ]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -15,16 +15,19 @@ export default function PurchaseSheet() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'Purchase'>>();
   const product = getProduct(route.params.productId);
-  const { purchasePass, balance } = useApp();
+  const { purchasePass, buyResaleListing, resaleListings, balance } = useApp();
   const showToast = useToast();
   const [confirming, setConfirming] = useState(false);
   const [coin, setCoin] = useState<CoinSymbol>('USDT');
   const [source, setSource] = useState<PaymentSource>(() => zektoSource(balance, 'USDT'));
   const fillAnim = useRef(new Animated.Value(0)).current;
 
+  const resaleId = route.params.resaleId;
+  const listing = resaleId ? resaleListings.find((l) => l.id === resaleId) : undefined;
+
   if (!product) return null;
 
-  const coinPrice = finalPrice(product.price, product.coinPct);
+  const coinPrice = listing ? listing.resalePrice : finalPrice(product.price, product.coinPct);
 
   const onSelectCoin = (next: CoinSymbol) => {
     setCoin(next);
@@ -39,14 +42,18 @@ export default function PurchaseSheet() {
     if (confirming) return;
     setConfirming(true);
     Animated.timing(fillAnim, { toValue: 100, duration: 550, useNativeDriver: false }).start(() => {
-      purchasePass(product, coin, source.label);
+      if (listing) {
+        buyResaleListing(listing.id, coin, source.label);
+      } else {
+        purchasePass(product, coin, source.label);
+      }
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
           routes: [{ name: 'Tabs', params: { screen: 'Wallet' } }],
         })
       );
-      showToast(`✓ Paid with ${coin} · Added to your Wallet`);
+      showToast(listing ? `✓ Bought resale pass · Added to your Wallet` : `✓ Paid with ${coin} · Added to your Wallet`);
     });
   };
 
@@ -60,8 +67,9 @@ export default function PurchaseSheet() {
 
       <Row label="Benefit" value={product.title} />
       <Row label="Merchant" value={product.merchant} />
+      {listing ? <Row label="Sold by" value={listing.sellerLabel} /> : null}
       <Row label="Valid until" value="90 days after purchase" />
-      <Row label="Final price" value={won(coinPrice)} last />
+      <Row label={listing ? 'Resale price' : 'Final price'} value={won(coinPrice)} last />
 
       <Text style={styles.cap}>Choose a stablecoin</Text>
       <View style={styles.coinTabs}>

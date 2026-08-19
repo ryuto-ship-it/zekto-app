@@ -52,6 +52,14 @@ export default function ProfileScreen() {
           </Pressable>
         ))}
       </View>
+
+      <View style={styles.whyCard}>
+        <Text style={styles.whyEyebrow}>WHY ZEKTO</Text>
+        <Text style={styles.whyText}>
+          Connected through the nationwide ZeroPay merchant network — ZEKTO plugs straight into 2M+ small
+          businesses across Korea with no separate contract per merchant.
+        </Text>
+      </View>
     </ScrollView>
   );
 }
@@ -79,4 +87,10 @@ const styles = StyleSheet.create({
   },
   itemIcon: { width: 30, height: 30, borderRadius: 9, backgroundColor: colors.jadeTint, alignItems: 'center', justifyContent: 'center' },
   itemLabel: { flex: 1, fontSize: 13, color: colors.ink, fontFamily: fonts.sansMedium },
+  whyCard: {
+    marginHorizontal: 20, marginTop: 20, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line,
+    borderRadius: radii.lg, padding: 16,
+  },
+  whyEyebrow: { fontSize: 10.5, letterSpacing: 1, color: colors.jade, fontFamily: fonts.sansBold, marginBottom: 6 },
+  whyText: { fontSize: 12.5, color: colors.inkSoft, lineHeight: 19, fontFamily: fonts.sans },
 });

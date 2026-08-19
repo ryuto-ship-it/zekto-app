@@ -102,7 +102,12 @@ export default function MapScreen() {
           <Pressable key={m.id} style={styles.row} onPress={() => openMerchant(m.id)}>
             <View style={[styles.rowThumb, { backgroundColor: PIN_COLOR[m.cat] }]} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.rowTitle}>{m.name}</Text>
+              <View style={styles.rowTitleRow}>
+                <Text style={styles.rowTitle}>{m.name}</Text>
+                <View style={styles.zeroPayBadge}>
+                  <Text style={styles.zeroPayBadgeText}>✓ ZeroPay</Text>
+                </View>
+              </View>
               <Text style={styles.rowMeta}>
                 {categoryLabels[m.cat]} · up to -{merchantBestCoinPct(m.id)}% with stablecoin
               </Text>
@@ -159,7 +164,7 @@ function MapPin({ merchant, onPress }: { merchant: Merchant; onPress: () => void
         <Text style={styles.pinDotText}>-{merchantBestCoinPct(merchant.id)}%</Text>
       </View>
       <View style={styles.pinLabel}>
-        <Text style={styles.pinLabelText}>{merchant.name.split(' ')[0]}</Text>
+        <Text style={styles.pinLabelText}>✓ {merchant.name.split(' ')[0]}</Text>
       </View>
     </Pressable>
   );
@@ -213,7 +218,10 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: colors.line, borderRadius: radii.lg, padding: 10,
   },
   rowThumb: { width: 44, height: 44, borderRadius: 10 },
+  rowTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
   rowTitle: { fontSize: 12.5, fontFamily: fonts.sansBold, color: colors.ink },
+  zeroPayBadge: { backgroundColor: colors.jadeTint, borderRadius: 5, paddingVertical: 1.5, paddingHorizontal: 5 },
+  zeroPayBadgeText: { fontSize: 8.5, fontFamily: fonts.sansBold, color: colors.jadeDeep },
   rowMeta: { fontSize: 10.5, color: colors.inkSoft, marginTop: 1, fontFamily: fonts.sans },
   rowDist: { fontFamily: fonts.monoSemiBold, fontSize: 11, color: colors.jadeDeep },
 });
