@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   sub: { fontSize: 12.5, color: colors.inkSoft, marginTop: 3, fontFamily: fonts.sans },
   stats: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginHorizontal: 20, marginVertical: 14 },
   stat: { flexGrow: 1, flexBasis: '30%', backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line, borderRadius: radii.lg, padding: 12 },
-  statNum: { fontFamily: fonts.monoSemiBold, fontSize: 16, color: colors.jadeDeep },
+  statNum: { fontFamily: fonts.monoSemiBold, fontSize: 16, color: colors.primary },
   statLabel: { fontSize: 9.5, color: colors.inkSoft, marginTop: 4, letterSpacing: 0.3, fontFamily: fonts.sansMedium },
   list: { paddingHorizontal: 20, gap: 12 },
   empty: { marginHorizontal: 30, marginTop: 60, alignItems: 'center' },

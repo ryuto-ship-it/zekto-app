@@ -4,20 +4,37 @@ export const colors = {
   paper: '#F7F8F3',
   surface: '#FFFFFF',
   white: '#FFFFFF',
-  jade: '#2F6B5A',
-  jadeDeep: '#1F4B3F',
-  jadeTint: '#DCE9E1',
-  coral: '#FF5A7A',
-  coralTint: '#FFE1E9',
-  teal: '#0891A8',
-  tealTint: '#DAF1F4',
-  gold: '#E8A93B',
-  goldTint: '#FBEDD3',
-  goldLight: '#F5D98A',
   line: '#E3E6DC',
-  fadedGreen: '#8FA79B',
-  mutedSage: '#6C8479',
   overlay: 'rgba(15,20,18,0.45)',
+
+  // Brand primary — a deliberately bold single signature color (Kurly-style),
+  // used for the logo, primary CTAs, selected tab/chip states, and progress
+  // emphasis. The old dark green (#1F4B3F) is fully retired — do not reuse it.
+  primary: '#6C3FC5',
+  primaryLight: '#9B6FE8',
+  primaryTint: '#F3EEFC',
+
+  // Category accents — each category gets its own two-stop gradient, plus a
+  // flat "start" color for places that only need one solid tint (labels,
+  // icons, thin badges).
+  coral: '#FF3B7F',
+  coralEnd: '#FF7A5C',
+  coralTint: '#FFE3EC',
+
+  teal: '#0EA5A8',
+  tealEnd: '#38BDF8',
+  tealTint: '#E3F6FB',
+
+  amber: '#F5A623',
+  amberEnd: '#FF6B4A',
+  amberTint: '#FFF0DE',
+
+  // Currency / stablecoin gold — independent of the category colors above,
+  // used only for the balance chip and anything asset/coin-related (the
+  // price-ladder stablecoin row, the AI badge, resale price tags).
+  gold: '#F0B429',
+  goldLight: '#F9D976',
+  goldTint: '#FDF2D9',
 };
 
 export const fonts = {
@@ -52,25 +69,25 @@ export const spacing = {
   xxl: 24,
 };
 
-// Category accent system — each category gets its own vivid color instead of
-// everything sharing the brand green. The brand green (jade/jadeDeep) is kept
-// for primary CTAs, nav, and the balance chip only.
+// Category accent system — each category gets its own vivid gradient instead
+// of everything sharing one brand tone. Brand primary (violet) is reserved
+// for CTAs/nav/logo only, never used as a category color.
 export const categoryColors: Record<string, [string, string]> = {
-  beauty: ['#FFB3C6', '#FF5A7A'],
-  hotel: ['#7DD3DE', '#0891A8'],
-  dining: ['#F5D98A', '#E8A93B'],
+  beauty: [colors.coral, colors.coralEnd],
+  hotel: [colors.teal, colors.tealEnd],
+  dining: [colors.amber, colors.amberEnd],
 };
 
 export const categoryAccents: Record<string, string> = {
   beauty: colors.coral,
   hotel: colors.teal,
-  dining: colors.gold,
+  dining: colors.amber,
 };
 
 export const categoryAccentTints: Record<string, string> = {
   beauty: colors.coralTint,
   hotel: colors.tealTint,
-  dining: colors.goldTint,
+  dining: colors.amberTint,
 };
 
 export const categoryLabels: Record<string, string> = {

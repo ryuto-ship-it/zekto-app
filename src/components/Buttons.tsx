@@ -43,7 +43,7 @@ export function SecondaryButton({
 const styles = StyleSheet.create({
   primary: {
     flex: 1,
-    backgroundColor: colors.jadeDeep,
+    backgroundColor: colors.primary,
     paddingVertical: 15,
     borderRadius: radii.lg,
     alignItems: 'center',

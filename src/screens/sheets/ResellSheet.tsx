@@ -90,10 +90,10 @@ const styles = StyleSheet.create({
   presetPrice: { fontSize: 9.5, color: colors.inkSoft, marginTop: 3, fontFamily: fonts.sans },
   summary: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 20,
-    marginTop: 18, backgroundColor: colors.jadeTint, borderRadius: radii.md, padding: 14,
+    marginTop: 18, backgroundColor: colors.primaryTint, borderRadius: radii.md, padding: 14,
   },
-  summaryLabel: { fontSize: 13, color: colors.jadeDeep, fontFamily: fonts.sansBold },
-  summaryValue: { fontFamily: fonts.monoSemiBold, fontSize: 18, color: colors.jadeDeep },
+  summaryLabel: { fontSize: 13, color: colors.primary, fontFamily: fonts.sansBold },
+  summaryValue: { fontFamily: fonts.monoSemiBold, fontSize: 18, color: colors.primary },
   note: { fontSize: 10.5, color: colors.inkSoft, marginHorizontal: 20, marginTop: 8, fontFamily: fonts.sans },
   footer: { paddingHorizontal: 20, marginTop: 18, marginBottom: 6 },
 });

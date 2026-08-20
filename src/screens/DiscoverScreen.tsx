@@ -3,18 +3,14 @@ import { View, Text, ScrollView, TextInput, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors, fonts, radii, shadows, categoryLabels, categoryAccents, categoryAccentTints } from '../theme/theme';
+import { colors, fonts, radii, shadows, categoryLabels, categoryAccents, categoryAccentTints, categoryColors } from '../theme/theme';
 import { PRODUCTS, Category } from '../data/products';
-import { won } from '../utils/format';
-import PriceLadder from '../components/PriceLadder';
 import Chip from '../components/Chip';
 import { PickCard, DealCard } from '../components/ProductCard';
 import { ResaleCard } from '../components/ResaleCard';
 import { SearchIcon, CategoryIcon, DiscoverIcon } from '../components/Icons';
 import { useApp } from '../context/AppContext';
 import { RootStackParamList } from '../navigation/types';
-
-const HERO_PRICE = { card: 95000, cash: 94050, coin: 92150 };
 
 type Filter = 'all' | Category | 'resale';
 
@@ -51,22 +47,14 @@ export default function DiscoverScreen() {
 
   return (
     <ScrollView style={[styles.screen, { backgroundColor: screenBg }]} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      <LinearGradient colors={['#1F4B3F', '#2F6B5A', '#256456']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
-        <View style={[styles.blob, styles.blobGold]} />
-        <View style={[styles.blob, styles.blobMint]} />
+      <LinearGradient colors={[colors.primary, colors.primaryLight]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
+        <View style={[styles.blob, styles.blobBig]} />
         <View style={[styles.blob, styles.blobSmall]} />
-        <Text style={styles.eyebrow}>FUTURE PASS · WORKS WHEN CARDS DON'T</Text>
-        <Text style={styles.heroTitle}>Card declined in Korea? Prepay with stablecoin instead.</Text>
-        <PriceLadder
-          rows={[
-            { label: 'Card', amount: HERO_PRICE.card, widthPct: 96, kind: 'card' },
-            { label: 'Cash', amount: HERO_PRICE.cash, widthPct: 93, kind: 'cash' },
-            { label: 'Stablecoin', amount: HERO_PRICE.coin, widthPct: 90, kind: 'coin' },
-          ]}
-          variant="hero"
-          bestText={`ALWAYS ACCEPTED · ${won(HERO_PRICE.card - HERO_PRICE.coin)} CHEAPER`}
-        />
-        <Text style={styles.heroCaption}>We split the card-network fee we save with you.</Text>
+        <Text style={styles.eyebrow}>CURATED FOR YOUR TRIP</Text>
+        <Text style={styles.heroTitle}>Korea, curated. Book the best clinics, stays, and tables before you land.</Text>
+        <Text style={styles.heroCaption}>
+          Pay however's easiest — card, cash, or stablecoin. What we care about first is what you want to do in Korea.
+        </Text>
       </LinearGradient>
 
       <View style={styles.searchWrap}>
@@ -85,11 +73,11 @@ export default function DiscoverScreen() {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow} contentContainerStyle={styles.chipRowContent}>
         {CHIPS.map((c) => {
           const active = filter === c.key;
-          const activeColor = c.cat ? categoryAccents[c.cat] : c.key === 'resale' ? colors.gold : colors.jade;
+          const activeColor = c.cat ? categoryAccents[c.cat] : c.key === 'resale' ? colors.gold : colors.primary;
           const icon = c.cat ? (
             <CategoryIcon cat={c.cat} size={20} color={active ? colors.white : activeColor} strokeWidth={2} />
           ) : c.key === 'all' ? (
-            <DiscoverIcon size={20} color={active ? colors.white : colors.jade} strokeWidth={2} />
+            <DiscoverIcon size={20} color={active ? colors.white : colors.primary} strokeWidth={2} />
           ) : null;
           return (
             <Chip
@@ -98,6 +86,7 @@ export default function DiscoverScreen() {
               icon={icon}
               active={active}
               activeColor={activeColor}
+              activeGradient={c.cat ? categoryColors[c.cat] : undefined}
               onPress={() => setFilter(c.key)}
             />
           );
@@ -170,10 +159,9 @@ const styles = StyleSheet.create({
     position: 'relative',
     ...shadows.cardLarge,
   },
-  blob: { position: 'absolute', borderRadius: 999 },
-  blobGold: { width: 180, height: 180, top: -70, right: -50, backgroundColor: 'rgba(232,169,59,0.35)' },
-  blobMint: { width: 140, height: 140, bottom: -60, left: -40, backgroundColor: 'rgba(125,211,222,0.18)' },
-  blobSmall: { width: 70, height: 70, top: 40, right: 30, backgroundColor: 'rgba(255,255,255,0.10)' },
+  blob: { position: 'absolute', borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.08)' },
+  blobBig: { width: 200, height: 200, top: -80, right: -60 },
+  blobSmall: { width: 110, height: 110, top: 30, right: 40 },
   eyebrow: { fontFamily: fonts.monoMedium, fontSize: 10.5, letterSpacing: 1.4, color: colors.goldTint, opacity: 0.9 },
   heroTitle: { fontFamily: fonts.serifBold, fontSize: 28, lineHeight: 33, color: colors.white, marginTop: 10, marginBottom: 16, maxWidth: 260 },
   heroCaption: { fontSize: 10.5, color: '#C9D6CE', marginTop: 8, fontFamily: fonts.sans },
@@ -187,7 +175,7 @@ const styles = StyleSheet.create({
   chipRowContent: { paddingHorizontal: 20, gap: 8 },
   sectionHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', marginHorizontal: 20, marginTop: 22, marginBottom: 10 },
   sectionTitle: { fontFamily: fonts.serif, fontSize: 17, color: colors.ink },
-  sectionSub: { fontSize: 11.5, color: colors.jade, fontFamily: fonts.sansBold },
+  sectionSub: { fontSize: 11.5, color: colors.primary, fontFamily: fonts.sansBold },
   pickScroll: { paddingHorizontal: 20, gap: 12 },
   dealList: { paddingHorizontal: 20, gap: 12 },
   dealGrid: { paddingHorizontal: 20, flexDirection: 'row', flexWrap: 'wrap', gap: 14 },

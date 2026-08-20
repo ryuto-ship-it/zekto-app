@@ -21,14 +21,14 @@ export default function ProfileScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <View style={styles.head}>
-        <LinearGradient colors={['#8FB3C4', '#2F6B5A']} style={styles.avatar} />
+        <LinearGradient colors={['#9B6FE8', '#6C3FC5']} style={styles.avatar} />
         <View>
           <Text style={styles.name}>Declan Murphy</Text>
           <Text style={styles.sub}>Traveler from Dublin, Ireland · Joined Aug 2026</Text>
         </View>
       </View>
 
-      <LinearGradient colors={['#E8A93B', '#C98A2A']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.balanceCard}>
+      <LinearGradient colors={[colors.gold, colors.goldLight]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.balanceCard}>
         <Text style={styles.balanceLabel}>STABLECOIN BALANCE</Text>
         <Text style={styles.balanceNum}>{balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</Text>
         <View style={styles.balanceRow}>
@@ -85,11 +85,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14,
     borderBottomWidth: 1, borderBottomColor: colors.line,
   },
-  itemIcon: { width: 30, height: 30, borderRadius: 9, backgroundColor: colors.jadeTint, alignItems: 'center', justifyContent: 'center' },
+  itemIcon: { width: 30, height: 30, borderRadius: 9, backgroundColor: colors.primaryTint, alignItems: 'center', justifyContent: 'center' },
   itemLabel: { flex: 1, fontSize: 13, color: colors.ink, fontFamily: fonts.sansMedium },
   whyCard: {
     marginHorizontal: 20, marginTop: 20, backgroundColor: colors.white, borderRadius: radii.lg, padding: 16, ...shadows.floating,
   },
-  whyEyebrow: { fontSize: 10.5, letterSpacing: 1, color: colors.jade, fontFamily: fonts.sansBold, marginBottom: 6 },
+  whyEyebrow: { fontSize: 10.5, letterSpacing: 1, color: colors.primary, fontFamily: fonts.sansBold, marginBottom: 6 },
   whyText: { fontSize: 12.5, color: colors.inkSoft, lineHeight: 19, fontFamily: fonts.sans },
 });

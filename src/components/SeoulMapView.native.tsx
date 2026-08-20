@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   pin: { alignItems: 'center' },
   pinDot: {
     width: 32, height: 32, borderRadius: 16, borderBottomRightRadius: 0,
-    backgroundColor: colors.jade, transform: [{ rotate: '45deg' }], alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.primary, transform: [{ rotate: '45deg' }], alignItems: 'center', justifyContent: 'center',
     borderWidth: 2, borderColor: 'rgba(255,255,255,0.6)',
   },
   pinDotYou: { backgroundColor: colors.ink },

@@ -110,7 +110,7 @@ export function CategoryIcon({ cat, ...rest }: IconProps & { cat: 'beauty' | 'ho
   return <DiningIcon {...rest} />;
 }
 
-export function GlobeIcon({ size = 15, color = '#1F4B3F' }: IconProps) {
+export function GlobeIcon({ size = 15, color = '#6C3FC5' }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx={12} cy={12} r={9} stroke={color} strokeWidth={1.8} />
@@ -119,7 +119,7 @@ export function GlobeIcon({ size = 15, color = '#1F4B3F' }: IconProps) {
   );
 }
 
-export function BellIcon({ size = 15, color = '#1F4B3F' }: IconProps) {
+export function BellIcon({ size = 15, color = '#6C3FC5' }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M6 10a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5H4.5S6 14 6 10z" stroke={color} strokeWidth={1.8} strokeLinejoin="round" />
@@ -128,7 +128,7 @@ export function BellIcon({ size = 15, color = '#1F4B3F' }: IconProps) {
   );
 }
 
-export function LockIcon({ size = 15, color = '#1F4B3F' }: IconProps) {
+export function LockIcon({ size = 15, color = '#6C3FC5' }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect x={5} y={10} width={14} height={10} rx={2} stroke={color} strokeWidth={1.8} />
@@ -137,7 +137,7 @@ export function LockIcon({ size = 15, color = '#1F4B3F' }: IconProps) {
   );
 }
 
-export function ChatIcon({ size = 15, color = '#1F4B3F' }: IconProps) {
+export function ChatIcon({ size = 15, color = '#6C3FC5' }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M4 5h16v11H8l-4 4z" stroke={color} strokeWidth={1.8} strokeLinejoin="round" />
@@ -145,7 +145,7 @@ export function ChatIcon({ size = 15, color = '#1F4B3F' }: IconProps) {
   );
 }
 
-export function DocIcon({ size = 15, color = '#1F4B3F' }: IconProps) {
+export function DocIcon({ size = 15, color = '#6C3FC5' }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path d="M6 3h9l3 3v15H6z" stroke={color} strokeWidth={1.8} strokeLinejoin="round" />
@@ -173,7 +173,7 @@ export function CashPaymentIcon({ size = 14, color = '#C9D6CE' }: IconProps) {
   );
 }
 
-export function CoinPaymentIcon({ size = 14, color = '#E8A93B' }: IconProps) {
+export function CoinPaymentIcon({ size = 14, color = '#F0B429' }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx={12} cy={12} r={9} stroke={color} strokeWidth={1.8} />

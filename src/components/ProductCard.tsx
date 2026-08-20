@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
-import { colors, fonts, radii, shadows, categoryLabels, categoryAccents } from '../theme/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { colors, fonts, radii, shadows, categoryLabels, categoryAccents, categoryColors } from '../theme/theme';
 import { won, finalPrice, imgUrl } from '../utils/format';
 import { Product } from '../data/products';
 import { StarIcon } from './Icons';
@@ -13,6 +14,7 @@ export function PickCard({ product, onPress }: { product: Product; onPress: () =
     <AnimatedPressable style={styles.pickCard} onPress={onPress}>
       <View style={styles.pickThumbWrap}>
         <Image source={{ uri: imgUrl(product.image, 344) }} style={styles.pickThumb} resizeMode="cover" />
+        <LinearGradient colors={categoryColors[product.cat]} style={[StyleSheet.absoluteFill, styles.tintOverlay]} />
         <View style={[styles.badge, { backgroundColor: colors.coral }]}>
           <Text style={styles.badgeText}>-{product.coinPct}%</Text>
         </View>
@@ -45,6 +47,7 @@ export function DealCard({
     <AnimatedPressable style={[styles.dealCard, gridWidth && styles.dealCardGrid]} onPress={onPress}>
       <View style={styles.dealThumbWrap}>
         <Image source={{ uri: imgUrl(product.image, 220) }} style={styles.dealThumb} resizeMode="cover" />
+        <LinearGradient colors={categoryColors[product.cat]} style={[StyleSheet.absoluteFill, styles.tintOverlay]} />
         <View style={[styles.badge, styles.badgeSmall, { backgroundColor: colors.coral }]}>
           <Text style={styles.badgeText}>-{product.coinPct}%</Text>
         </View>
@@ -80,6 +83,7 @@ const styles = StyleSheet.create({
   },
   pickThumbWrap: { height: 132, position: 'relative', backgroundColor: colors.paper },
   pickThumb: { width: '100%', height: '100%' },
+  tintOverlay: { opacity: 0.3 },
   badge: {
     position: 'absolute', top: 10, left: 10,
     paddingVertical: 4, paddingHorizontal: 9, borderRadius: 8,
@@ -93,7 +97,7 @@ const styles = StyleSheet.create({
   merchant: { fontSize: 10.5, color: colors.inkSoft, fontFamily: fonts.sans },
   priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: 5, marginTop: 8 },
   was: { color: '#9AA79D', textDecorationLine: 'line-through', fontFamily: fonts.mono, fontSize: 10.5 },
-  now: { fontFamily: fonts.monoSemiBold, fontSize: 12.5, color: colors.jadeDeep },
+  now: { fontFamily: fonts.monoSemiBold, fontSize: 12.5, color: colors.primary },
 
   dealCard: {
     backgroundColor: colors.white, borderRadius: radii.xl, overflow: 'hidden', ...shadows.card,

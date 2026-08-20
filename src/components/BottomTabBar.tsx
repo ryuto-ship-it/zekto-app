@@ -24,7 +24,7 @@ export default function BottomTabBar({ state, descriptors, navigation }: BottomT
         const label = (options.tabBarLabel as string) ?? options.title ?? route.name;
         const isFocused = state.index === index;
         const Icon = ICONS[route.name] ?? DiscoverIcon;
-        const color = isFocused ? colors.jadeDeep : '#8B978F';
+        const color = isFocused ? colors.primary : '#8B978F';
 
         const onPress = () => {
           const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });

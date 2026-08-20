@@ -47,13 +47,13 @@ export default function MerchantSheet() {
 const styles = StyleSheet.create({
   cover: { width: '100%', height: 130, backgroundColor: colors.paper },
   head: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 6 },
-  cat: { fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: colors.jade, fontFamily: fonts.sansBold },
+  cat: { fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: colors.primary, fontFamily: fonts.sansBold },
   name: { fontFamily: fonts.serifMedium, fontSize: 20, marginTop: 5, marginBottom: 4, color: colors.ink },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
   stars: { color: colors.gold, fontWeight: '700', fontSize: 12 },
   meta: { fontSize: 12, color: colors.inkSoft, fontFamily: fonts.sans },
-  zeroPayRow: { marginTop: 8, backgroundColor: colors.jadeTint, borderRadius: 8, paddingVertical: 6, paddingHorizontal: 10, alignSelf: 'flex-start' },
-  zeroPayText: { fontSize: 10.5, color: colors.jadeDeep, fontFamily: fonts.sansBold },
+  zeroPayRow: { marginTop: 8, backgroundColor: colors.primaryTint, borderRadius: 8, paddingVertical: 6, paddingHorizontal: 10, alignSelf: 'flex-start' },
+  zeroPayText: { fontSize: 10.5, color: colors.primary, fontFamily: fonts.sansBold },
   cap: {
     marginHorizontal: 20, marginTop: 16, marginBottom: 8, fontSize: 11, textTransform: 'uppercase',
     letterSpacing: 0.6, color: colors.inkSoft, fontFamily: fonts.sansBold,

@@ -73,9 +73,9 @@ const styles = StyleSheet.create({
   qrCell: { width: CELL_SIZE, height: CELL_SIZE, borderRadius: 1 },
   qrCellOn: { backgroundColor: colors.ink },
   qrCellOff: { backgroundColor: 'transparent' },
-  code: { fontFamily: fonts.monoSemiBold, fontSize: 13, letterSpacing: 1, color: colors.jadeDeep, marginBottom: 8 },
+  code: { fontFamily: fonts.monoSemiBold, fontSize: 13, letterSpacing: 1, color: colors.primary, marginBottom: 8 },
   chainNotice: {
-    backgroundColor: colors.jadeTint, borderRadius: radii.md, paddingVertical: 10, paddingHorizontal: 14, marginBottom: 4,
+    backgroundColor: colors.primaryTint, borderRadius: radii.md, paddingVertical: 10, paddingHorizontal: 14, marginBottom: 4,
   },
-  chainNoticeText: { fontSize: 10.5, color: colors.jadeDeep, textAlign: 'center', lineHeight: 15, fontFamily: fonts.sans },
+  chainNoticeText: { fontSize: 10.5, color: colors.primary, textAlign: 'center', lineHeight: 15, fontFamily: fonts.sans },
 });

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, ScrollView, Pressable, Animated, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors, fonts, radii, shadows, categoryLabels, categoryAccents, categoryAccentTints } from '../theme/theme';
+import { colors, fonts, radii, shadows, categoryLabels, categoryAccents, categoryAccentTints, categoryColors } from '../theme/theme';
 import { MERCHANTS, merchantBestCoinPct, merchantDist } from '../data/merchants';
 import { REGIONS, degreeDistance, REGION_RADIUS_DEG } from '../data/regions';
 import { Category } from '../data/products';
@@ -70,14 +70,22 @@ export default function MapScreen() {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow} contentContainerStyle={styles.chipRowContent}>
         {CHIPS.map((c) => {
           const active = filter === c.key;
-          const activeColor = c.cat ? categoryAccents[c.cat] : colors.jade;
+          const activeColor = c.cat ? categoryAccents[c.cat] : colors.primary;
           const icon = c.cat ? (
             <CategoryIcon cat={c.cat} size={20} color={active ? colors.white : activeColor} strokeWidth={2} />
           ) : (
-            <DiscoverIcon size={20} color={active ? colors.white : colors.jade} strokeWidth={2} />
+            <DiscoverIcon size={20} color={active ? colors.white : colors.primary} strokeWidth={2} />
           );
           return (
-            <Chip key={c.key} label={c.label} icon={icon} active={active} activeColor={activeColor} onPress={() => setFilter(c.key)} />
+            <Chip
+              key={c.key}
+              label={c.label}
+              icon={icon}
+              active={active}
+              activeColor={activeColor}
+              activeGradient={c.cat ? categoryColors[c.cat] : undefined}
+              onPress={() => setFilter(c.key)}
+            />
           );
         })}
       </ScrollView>
@@ -177,7 +185,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line, borderRadius: radii.lg,
     paddingVertical: 8, paddingHorizontal: 12, minWidth: 108,
   },
-  regionTabActive: { backgroundColor: colors.jadeDeep, borderColor: colors.jadeDeep, ...shadows.floating },
+  regionTabActive: { backgroundColor: colors.primary, borderColor: colors.primary, ...shadows.floating },
   regionName: { fontSize: 12.5, fontFamily: fonts.sansBold, color: colors.ink },
   regionNameActive: { color: colors.white },
   regionBlurb: { fontSize: 9.5, color: colors.inkSoft, marginTop: 1, fontFamily: fonts.sans },
@@ -204,7 +212,7 @@ const styles = StyleSheet.create({
   mapHintText: { fontSize: 10, color: colors.inkSoft, fontFamily: fonts.sansMedium },
   listHeadRow: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', marginHorizontal: 20, marginTop: 20, marginBottom: 8 },
   listHead: { fontFamily: fonts.serif, fontSize: 16, color: colors.ink },
-  listCount: { fontSize: 11, color: colors.jade, fontFamily: fonts.sansBold },
+  listCount: { fontSize: 11, color: colors.primary, fontFamily: fonts.sansBold },
   list: { paddingHorizontal: 20, gap: 10 },
   row: {
     flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.white,
@@ -213,10 +221,10 @@ const styles = StyleSheet.create({
   rowThumb: { width: 44, height: 44, borderRadius: 10 },
   rowTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
   rowTitle: { fontSize: 12.5, fontFamily: fonts.sansBold, color: colors.ink },
-  zeroPayBadge: { backgroundColor: colors.jadeTint, borderRadius: 5, paddingVertical: 1.5, paddingHorizontal: 5 },
-  zeroPayBadgeText: { fontSize: 8.5, fontFamily: fonts.sansBold, color: colors.jadeDeep },
+  zeroPayBadge: { backgroundColor: colors.primaryTint, borderRadius: 5, paddingVertical: 1.5, paddingHorizontal: 5 },
+  zeroPayBadgeText: { fontSize: 8.5, fontFamily: fonts.sansBold, color: colors.primary },
   rowMeta: { fontSize: 10.5, color: colors.inkSoft, marginTop: 1, fontFamily: fonts.sans },
-  rowDist: { fontFamily: fonts.monoSemiBold, fontSize: 11, color: colors.jadeDeep },
+  rowDist: { fontFamily: fonts.monoSemiBold, fontSize: 11, color: colors.primary },
   emptyState: { alignItems: 'center', paddingVertical: 30 },
   emptyTitle: { fontFamily: fonts.serif, fontSize: 15, color: colors.ink, marginBottom: 4 },
   emptyText: { fontSize: 12, color: colors.inkSoft },
