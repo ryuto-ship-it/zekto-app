@@ -85,6 +85,33 @@ export const MERCHANTS: Merchant[] = [
     coords: { latitude: 37.4837, longitude: 127.0324 },
     image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9',
   },
+  {
+    id: 'm9',
+    name: 'Apgujeong Glow Clinic',
+    cat: 'beauty',
+    loc: 'Apgujeong, Seoul',
+    rating: 4.7,
+    coords: { latitude: 37.5266, longitude: 127.0335 },
+    image: 'https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6',
+  },
+  {
+    id: 'm10',
+    name: 'Sinsa Derma Lab',
+    cat: 'beauty',
+    loc: 'Sinsa-dong, Seoul',
+    rating: 4.8,
+    coords: { latitude: 37.5172, longitude: 127.0202 },
+    image: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9',
+  },
+  {
+    id: 'm11',
+    name: 'Gangnam Prime Dermatology',
+    cat: 'beauty',
+    loc: 'Gangnam-gu, Seoul',
+    rating: 4.9,
+    coords: { latitude: 37.4979, longitude: 127.0276 },
+    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be',
+  },
 ];
 
 // "You" marker — placed in Myeongdong, the default map center.

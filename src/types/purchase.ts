@@ -17,7 +17,7 @@ export type PaymentSource = {
 export function zektoSource(balance: number, coin: CoinSymbol): PaymentSource {
   return {
     type: 'zekto',
-    label: 'ZEKTO Balance',
+    label: 'FuturePass Balance',
     sub: `${balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} ${coin} available · instant`,
   };
 }

@@ -57,7 +57,7 @@ export default function PurchaseSheet() {
     });
   };
 
-  const sourceIcon = source.type === 'zekto' ? 'Z' : source.type === 'MetaMask' ? '🦊' : '🛡️';
+  const sourceIcon = source.type === 'zekto' ? 'F' : source.type === 'MetaMask' ? '🦊' : '🛡️';
 
   return (
     <Sheet onClose={() => navigation.goBack()} scroll>

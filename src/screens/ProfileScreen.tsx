@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, fonts, radii } from '../theme/theme';
+import { colors, fonts, radii, shadows } from '../theme/theme';
 import { useApp } from '../context/AppContext';
 import { useToast } from '../context/ToastContext';
 import { GlobeIcon, BellIcon, LockIcon, ChatIcon, DocIcon, ChevronRight } from '../components/Icons';
@@ -23,12 +23,12 @@ export default function ProfileScreen() {
       <View style={styles.head}>
         <LinearGradient colors={['#8FB3C4', '#2F6B5A']} style={styles.avatar} />
         <View>
-          <Text style={styles.name}>Alex Chen</Text>
-          <Text style={styles.sub}>Traveler · Joined Aug 2026</Text>
+          <Text style={styles.name}>Declan Murphy</Text>
+          <Text style={styles.sub}>Traveler from Dublin, Ireland · Joined Aug 2026</Text>
         </View>
       </View>
 
-      <View style={styles.balanceCard}>
+      <LinearGradient colors={['#E8A93B', '#C98A2A']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.balanceCard}>
         <Text style={styles.balanceLabel}>STABLECOIN BALANCE</Text>
         <Text style={styles.balanceNum}>{balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</Text>
         <View style={styles.balanceRow}>
@@ -39,7 +39,7 @@ export default function ProfileScreen() {
             <Text style={styles.balanceBtnText}>Transaction history</Text>
           </Pressable>
         </View>
-      </View>
+      </LinearGradient>
 
       <View style={styles.list}>
         {LIST_ITEMS.map(({ key, label, Icon }) => (
@@ -54,9 +54,9 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.whyCard}>
-        <Text style={styles.whyEyebrow}>WHY ZEKTO</Text>
+        <Text style={styles.whyEyebrow}>WHY FUTUREPASS</Text>
         <Text style={styles.whyText}>
-          Connected through the nationwide ZeroPay merchant network — ZEKTO plugs straight into 2M+ small
+          Connected through the nationwide ZeroPay merchant network — FuturePass plugs straight into 2M+ small
           businesses across Korea with no separate contract per merchant.
         </Text>
       </View>
@@ -71,15 +71,15 @@ const styles = StyleSheet.create({
   avatar: { width: 56, height: 56, borderRadius: 28 },
   name: { fontFamily: fonts.serif, fontSize: 18, color: colors.ink },
   sub: { fontSize: 11.5, color: colors.inkSoft, marginTop: 2, fontFamily: fonts.sans },
-  balanceCard: { marginHorizontal: 20, marginBottom: 20, backgroundColor: colors.jadeDeep, borderRadius: radii.xl, padding: 18 },
-  balanceLabel: { fontSize: 11, color: '#BFD1C7', letterSpacing: 0.6, fontFamily: fonts.sansMedium },
-  balanceNum: { fontFamily: fonts.monoSemiBold, fontSize: 26, color: colors.white, marginTop: 4, marginBottom: 12 },
+  balanceCard: { marginHorizontal: 20, marginBottom: 20, borderRadius: radii.xl, padding: 18, ...shadows.card },
+  balanceLabel: { fontSize: 11, color: 'rgba(31,20,4,0.65)', letterSpacing: 0.6, fontFamily: fonts.sansMedium },
+  balanceNum: { fontFamily: fonts.monoSemiBold, fontSize: 26, color: '#2B1B03', marginTop: 4, marginBottom: 12 },
   balanceRow: { flexDirection: 'row', gap: 10 },
   balanceBtn: {
-    flex: 1, backgroundColor: 'rgba(255,255,255,0.12)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)',
+    flex: 1, backgroundColor: 'rgba(255,255,255,0.35)', borderWidth: 1, borderColor: 'rgba(43,27,3,0.18)',
     paddingVertical: 9, borderRadius: 10, alignItems: 'center',
   },
-  balanceBtnText: { color: colors.white, fontSize: 12, fontFamily: fonts.sansBold },
+  balanceBtnText: { color: '#2B1B03', fontSize: 12, fontFamily: fonts.sansBold },
   list: { marginHorizontal: 20 },
   listItem: {
     flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14,
@@ -88,8 +88,7 @@ const styles = StyleSheet.create({
   itemIcon: { width: 30, height: 30, borderRadius: 9, backgroundColor: colors.jadeTint, alignItems: 'center', justifyContent: 'center' },
   itemLabel: { flex: 1, fontSize: 13, color: colors.ink, fontFamily: fonts.sansMedium },
   whyCard: {
-    marginHorizontal: 20, marginTop: 20, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line,
-    borderRadius: radii.lg, padding: 16,
+    marginHorizontal: 20, marginTop: 20, backgroundColor: colors.white, borderRadius: radii.lg, padding: 16, ...shadows.floating,
   },
   whyEyebrow: { fontSize: 10.5, letterSpacing: 1, color: colors.jade, fontFamily: fonts.sansBold, marginBottom: 6 },
   whyText: { fontSize: 12.5, color: colors.inkSoft, lineHeight: 19, fontFamily: fonts.sans },

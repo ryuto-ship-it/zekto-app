@@ -3,6 +3,9 @@ import { Product, Category } from '../data/products';
 import { finalPrice } from '../utils/format';
 import { CoinSymbol } from '../types/purchase';
 import { ResaleListing, SEED_RESALE_LISTINGS } from '../data/resale';
+import { buildSeedPasses, SEED_PASS_COUNT } from '../data/walletSeed';
+
+export const STARTING_BALANCE = 15000;
 
 export type Pass = {
   uid: number;
@@ -38,7 +41,7 @@ type AppState = {
 
 const AppContext = createContext<AppState | undefined>(undefined);
 
-let uidCounter = 1;
+let uidCounter = SEED_PASS_COUNT + 1;
 function nextUid() {
   return uidCounter++;
 }
@@ -54,8 +57,8 @@ function makeCode() {
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [balance, setBalance] = useState(1240);
-  const [purchased, setPurchased] = useState<Pass[]>([]);
+  const [balance, setBalance] = useState(STARTING_BALANCE);
+  const [purchased, setPurchased] = useState<Pass[]>(() => buildSeedPasses());
   const [resaleListings, setResaleListings] = useState<ResaleListing[]>(SEED_RESALE_LISTINGS);
   const [resoldCount, setResoldCount] = useState(0);
 

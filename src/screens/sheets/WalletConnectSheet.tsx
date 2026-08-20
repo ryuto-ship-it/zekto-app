@@ -62,14 +62,14 @@ export default function WalletConnectSheet() {
       {mode === 'choose' && (
         <View style={styles.chooseWrap}>
           <Text style={styles.h2}>Choose payment source</Text>
-          <Text style={styles.subhead}>Pay from your ZEKTO balance, or connect your own wallet.</Text>
+          <Text style={styles.subhead}>Pay from your FuturePass balance, or connect your own wallet.</Text>
 
           <Pressable style={styles.option} onPress={chooseZekto}>
             <View style={[styles.icon, styles.iconZekto]}>
-              <Text style={styles.iconZektoText}>Z</Text>
+              <Text style={styles.iconZektoText}>F</Text>
             </View>
             <View style={styles.optionText}>
-              <Text style={styles.optionTitle}>ZEKTO Balance</Text>
+              <Text style={styles.optionTitle}>FuturePass Balance</Text>
               <Text style={styles.optionSub}>{balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} {route.params.currentCoin} · instant, no network fee</Text>
             </View>
           </Pressable>

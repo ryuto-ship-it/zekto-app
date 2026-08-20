@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TextInput, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors, fonts, radii, shadows, categoryLabels, categoryAccents } from '../theme/theme';
+import { colors, fonts, radii, shadows, categoryLabels, categoryAccents, categoryAccentTints } from '../theme/theme';
 import { PRODUCTS, Category } from '../data/products';
 import { won } from '../utils/format';
 import PriceLadder from '../components/PriceLadder';
@@ -47,8 +47,10 @@ export default function DiscoverScreen() {
   const openDetail = (id: number) => navigation.navigate('ProductDetail', { productId: id });
   const openResale = (productId: number, resaleId: string) => navigation.navigate('ProductDetail', { productId, resaleId });
 
+  const screenBg = filter === 'beauty' || filter === 'hotel' || filter === 'dining' ? categoryAccentTints[filter] : colors.paper;
+
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+    <ScrollView style={[styles.screen, { backgroundColor: screenBg }]} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <LinearGradient colors={['#1F4B3F', '#2F6B5A', '#256456']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
         <View style={[styles.blob, styles.blobGold]} />
         <View style={[styles.blob, styles.blobMint]} />
