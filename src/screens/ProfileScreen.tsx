@@ -8,6 +8,7 @@ import { useApp } from '../context/AppContext';
 import { useToast } from '../context/ToastContext';
 import { GlobeIcon, BellIcon, LockIcon, ChatIcon, DocIcon, ChevronRight } from '../components/Icons';
 import { RootStackParamList } from '../navigation/types';
+import { useCountUp } from '../utils/useCountUp';
 
 const LIST_ITEMS = [
   { key: 'lang', label: 'Language & region', Icon: GlobeIcon },
@@ -21,6 +22,8 @@ export default function ProfileScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { balance, points, tier } = useApp();
   const showToast = useToast();
+  const displayedBalance = useCountUp(balance, 700);
+  const displayedPoints = useCountUp(points, 700);
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -38,7 +41,7 @@ export default function ProfileScreen() {
 
       <LinearGradient colors={[colors.gold, colors.goldLight]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.balanceCard}>
         <Text style={styles.balanceLabel}>STABLECOIN BALANCE</Text>
-        <Text style={styles.balanceNum}>{balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</Text>
+        <Text style={styles.balanceNum}>{displayedBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</Text>
         <View style={styles.balanceRow}>
           <Pressable style={styles.balanceBtn} onPress={() => navigation.navigate('AddFunds')}>
             <Text style={styles.balanceBtnText}>+ Add funds</Text>
@@ -53,7 +56,7 @@ export default function ProfileScreen() {
         <LinearGradient colors={[colors.rose, colors.roseLight]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.pointsCard}>
           <View style={styles.pointsCardLeft}>
             <Text style={styles.pointsLabel}>FUTUREPASS POINTS</Text>
-            <Text style={styles.pointsNum}>{points.toLocaleString('en-US')}P</Text>
+            <Text style={styles.pointsNum}>{Math.round(displayedPoints).toLocaleString('en-US')}P</Text>
             <Text style={styles.pointsHint}>Earn {Math.round(tier.earnRate * 1000) / 10}% back on every stablecoin purchase</Text>
           </View>
           <Text style={styles.pointsChevron}>›</Text>

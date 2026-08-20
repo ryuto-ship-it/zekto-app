@@ -1,27 +1,45 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, Animated, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts, radii, shadows } from '../theme/theme';
 import { useApp } from '../context/AppContext';
+import { useCountUp } from '../utils/useCountUp';
 
 export default function TopBar() {
   const { balance, activeRegionName } = useApp();
+  const displayedBalance = useCountUp(balance, 700);
+  const scale = useRef(new Animated.Value(1)).current;
+  const mounted = useRef(false);
+
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    Animated.sequence([
+      Animated.spring(scale, { toValue: 1.08, useNativeDriver: true, speed: 30, bounciness: 12 }),
+      Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 8 }),
+    ]).start();
+  }, [balance, scale]);
+
   return (
     <View style={styles.topbar}>
       <View>
         <Text style={styles.wordmark}>FuturePass</Text>
         <Text style={styles.loc}>📍 {activeRegionName ? `${activeRegionName}, Seoul` : 'Seoul, KR'}</Text>
       </View>
-      <LinearGradient
-        colors={[colors.gold, colors.goldLight]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.balanceChip}
-      >
-        <Text style={styles.balanceText}>
-          {balance.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} USDT
-        </Text>
-      </LinearGradient>
+      <Animated.View style={{ transform: [{ scale }] }}>
+        <LinearGradient
+          colors={[colors.gold, colors.goldLight]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.balanceChip}
+        >
+          <Text style={styles.balanceText}>
+            {Math.round(displayedBalance).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} USDT
+          </Text>
+        </LinearGradient>
+      </Animated.View>
     </View>
   );
 }

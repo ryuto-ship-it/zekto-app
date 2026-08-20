@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, ScrollView, Pressable, Animated, StyleSheet } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts, radii, shadows, categoryLabels, categoryAccents, categoryAccentTints, categoryColors } from '../theme/theme';
@@ -12,6 +12,7 @@ import { CategoryIcon, DiscoverIcon } from '../components/Icons';
 import { RootStackParamList } from '../navigation/types';
 import { useApp } from '../context/AppContext';
 import HScroll from '../components/HScroll';
+import PulsingDot from '../components/PulsingDot';
 
 const LIVE_BASE = 128;
 const REGION_ZOOM_DELTA = 0.02;
@@ -156,23 +157,6 @@ export default function MapScreen() {
   );
 }
 
-function PulsingDot() {
-  const opacity = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(opacity, { toValue: 0.5, duration: 700, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 1, duration: 700, useNativeDriver: true }),
-      ])
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [opacity]);
-
-  return <Animated.View style={[styles.liveDot, { opacity }]} />;
-}
-
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   content: { paddingBottom: 32 },
@@ -180,7 +164,6 @@ const styles = StyleSheet.create({
   h1: { fontFamily: fonts.serif, fontSize: 21, color: colors.ink },
   sub: { fontSize: 12.5, color: colors.inkSoft, marginTop: 3, fontFamily: fonts.sans },
   liveTicker: { flexDirection: 'row', alignItems: 'center', gap: 7, marginHorizontal: 20, marginTop: 12 },
-  liveDot: { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#E2453F' },
   liveText: { fontSize: 11, color: colors.inkSoft, fontFamily: fonts.sans },
   chipRow: { marginTop: 12 },
   chipRowContent: { paddingHorizontal: 20, gap: 8 },

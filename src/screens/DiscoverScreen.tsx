@@ -1,9 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, ScrollView, TextInput, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors, fonts, radii, shadows, categoryLabels, categoryAccents, categoryAccentTints, categoryColors } from '../theme/theme';
+import { colors, fonts, radii, categoryLabels, categoryAccents, categoryAccentTints, categoryColors } from '../theme/theme';
 import { PRODUCTS, Category } from '../data/products';
 import Chip from '../components/Chip';
 import { PickCard, DealCard } from '../components/ProductCard';
@@ -12,6 +11,11 @@ import { SearchIcon, CategoryIcon, DiscoverIcon } from '../components/Icons';
 import { useApp } from '../context/AppContext';
 import { RootStackParamList } from '../navigation/types';
 import HScroll from '../components/HScroll';
+import HeroCarousel from '../components/HeroCarousel';
+import PulsingDot from '../components/PulsingDot';
+import FadeInUp from '../components/FadeInUp';
+
+const LIVE_BOOKINGS_BASE = 342;
 
 type Filter = 'all' | Category | 'resale';
 
@@ -30,12 +34,20 @@ export default function DiscoverScreen() {
   const { resaleListings, toggleLike, bumpListingViews } = useApp();
   const [filter, setFilter] = useState<Filter>('all');
   const [query, setQuery] = useState('');
+  const [liveBookings, setLiveBookings] = useState(LIVE_BOOKINGS_BASE);
 
   useEffect(() => {
     if (filter === 'resale') bumpListingViews();
     // Only re-fire when the Resale tab is (re-)selected, not on every listing update.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLiveBookings((prev) => Math.max(300, prev + Math.floor(Math.random() * 5) - 1));
+    }, 3200);
+    return () => clearInterval(timer);
+  }, []);
 
   const picks = useMemo(() => PRODUCTS.filter((p) => p.pick), []);
   const list = useMemo(() => {
@@ -56,15 +68,12 @@ export default function DiscoverScreen() {
 
   return (
     <ScrollView style={[styles.screen, { backgroundColor: screenBg }]} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      <LinearGradient colors={[colors.primary, colors.primaryLight]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
-        <View style={[styles.blob, styles.blobBig]} />
-        <View style={[styles.blob, styles.blobSmall]} />
-        <Text style={styles.eyebrow}>CURATED FOR YOUR TRIP</Text>
-        <Text style={styles.heroTitle}>Korea, curated. Book the best clinics, stays, and tables before you land.</Text>
-        <Text style={styles.heroCaption}>
-          Pay however's easiest — card, cash, or stablecoin. What we care about first is what you want to do in Korea.
-        </Text>
-      </LinearGradient>
+      <HeroCarousel />
+
+      <View style={styles.liveTicker}>
+        <PulsingDot />
+        <Text style={styles.liveText}>Live · {liveBookings} bookings today</Text>
+      </View>
 
       <View style={styles.searchWrap}>
         <View style={styles.searchBar}>
@@ -109,13 +118,14 @@ export default function DiscoverScreen() {
             <Text style={styles.sectionSub}>{resaleListings.length} listed</Text>
           </View>
           <View style={styles.dealList}>
-            {resaleListings.map((l) => (
-              <ResaleCard
-                key={l.id}
-                listing={l}
-                onPress={() => openResale(l.productId, l.id)}
-                onToggleLike={() => toggleLike(l.id)}
-              />
+            {resaleListings.map((l, i) => (
+              <FadeInUp key={l.id} index={i}>
+                <ResaleCard
+                  listing={l}
+                  onPress={() => openResale(l.productId, l.id)}
+                  onToggleLike={() => toggleLike(l.id)}
+                />
+              </FadeInUp>
             ))}
             {resaleListings.length === 0 ? (
               <View style={styles.emptyState}>
@@ -132,8 +142,10 @@ export default function DiscoverScreen() {
             <Text style={styles.sectionSub}>{picks.length} benefits nearby</Text>
           </View>
           <HScroll contentContainerStyle={styles.pickScroll}>
-            {picks.map((p) => (
-              <PickCard key={p.id} product={p} onPress={() => openDetail(p.id)} />
+            {picks.map((p, i) => (
+              <FadeInUp key={p.id} index={i}>
+                <PickCard product={p} onPress={() => openDetail(p.id)} />
+              </FadeInUp>
             ))}
           </HScroll>
 
@@ -142,10 +154,10 @@ export default function DiscoverScreen() {
             <Text style={styles.sectionSub}>{list.length} available</Text>
           </View>
           <View style={styles.dealGrid}>
-            {list.map((p) => (
-              <View key={p.id} style={styles.gridItem}>
+            {list.map((p, i) => (
+              <FadeInUp key={p.id} index={i} style={styles.gridItem}>
                 <DealCard product={p} onPress={() => openDetail(p.id)} gridWidth />
-              </View>
+              </FadeInUp>
             ))}
             {list.length === 0 ? (
               <View style={styles.emptyState}>
@@ -163,23 +175,9 @@ export default function DiscoverScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.paper },
   content: { paddingBottom: 32 },
-  hero: {
-    margin: 20,
-    marginBottom: 6,
-    padding: 20,
-    paddingTop: 22,
-    borderRadius: radii.xxl,
-    overflow: 'hidden',
-    position: 'relative',
-    ...shadows.cardLarge,
-  },
-  blob: { position: 'absolute', borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.08)' },
-  blobBig: { width: 200, height: 200, top: -80, right: -60 },
-  blobSmall: { width: 110, height: 110, top: 30, right: 40 },
-  eyebrow: { fontFamily: fonts.monoMedium, fontSize: 10.5, letterSpacing: 1.4, color: colors.goldTint, opacity: 0.9 },
-  heroTitle: { fontFamily: fonts.serifBold, fontSize: 28, lineHeight: 33, color: colors.white, marginTop: 10, marginBottom: 16, maxWidth: 260 },
-  heroCaption: { fontSize: 10.5, color: '#C9D6CE', marginTop: 8, fontFamily: fonts.sans },
-  searchWrap: { marginHorizontal: 20, marginTop: 16, marginBottom: 4 },
+  liveTicker: { flexDirection: 'row', alignItems: 'center', gap: 7, marginHorizontal: 20, marginTop: 10 },
+  liveText: { fontSize: 11, color: colors.inkSoft, fontFamily: fonts.sans },
+  searchWrap: { marginHorizontal: 20, marginTop: 14, marginBottom: 4 },
   searchBar: {
     flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.white,
     borderWidth: 1, borderColor: colors.line, paddingVertical: 11, paddingHorizontal: 14, borderRadius: radii.md,
