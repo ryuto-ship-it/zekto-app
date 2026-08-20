@@ -104,9 +104,35 @@ export function DiningIcon({ size = 20, color = '#FFFFFF', strokeWidth = 1.8 }: 
   );
 }
 
-export function CategoryIcon({ cat, ...rest }: IconProps & { cat: 'beauty' | 'hotel' | 'dining' }) {
+export function ShoppingIcon({ size = 20, color = '#FFFFFF', strokeWidth = 1.8 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M6 8h12l-1 12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 8z" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+      <Path d="M9 8V6a3 3 0 0 1 6 0v2" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+export function ShowIcon({ size = 20, color = '#FFFFFF', strokeWidth = 1.8 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8z"
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path d="M14 6.5v2M14 11v2M14 15.5v2" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+export function CategoryIcon({ cat, ...rest }: IconProps & { cat: 'beauty' | 'hotel' | 'dining' | 'shopping' | 'show' }) {
   if (cat === 'beauty') return <BeautyIcon {...rest} />;
   if (cat === 'hotel') return <HotelIcon {...rest} />;
+  if (cat === 'shopping') return <ShoppingIcon {...rest} />;
+  if (cat === 'show') return <ShowIcon {...rest} />;
   return <DiningIcon {...rest} />;
 }
 

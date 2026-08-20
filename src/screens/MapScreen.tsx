@@ -23,6 +23,8 @@ const CHIPS: { key: Filter; label: string; cat?: Category }[] = [
   { key: 'beauty', label: 'Beauty & Medical', cat: 'beauty' },
   { key: 'hotel', label: 'Hotels', cat: 'hotel' },
   { key: 'dining', label: 'Dining', cat: 'dining' },
+  { key: 'shopping', label: 'Fashion & Shopping', cat: 'shopping' },
+  { key: 'show', label: 'Shows & Entertainment', cat: 'show' },
 ];
 
 export default function MapScreen() {
@@ -60,7 +62,7 @@ export default function MapScreen() {
     ? { latitude: region.coords.latitude, longitude: region.coords.longitude, latitudeDelta: REGION_ZOOM_DELTA, longitudeDelta: REGION_ZOOM_DELTA }
     : null;
 
-  const screenBg = filter === 'beauty' || filter === 'hotel' || filter === 'dining' ? categoryAccentTints[filter] : colors.paper;
+  const screenBg = filter !== 'all' ? categoryAccentTints[filter] : colors.paper;
 
   return (
     <ScrollView style={[styles.screen, { backgroundColor: screenBg }]} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>

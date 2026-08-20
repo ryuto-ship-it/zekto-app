@@ -20,6 +20,8 @@ const CHIPS: { key: Filter; label: string; cat?: Category }[] = [
   { key: 'beauty', label: 'Beauty & Medical', cat: 'beauty' },
   { key: 'hotel', label: 'Hotels', cat: 'hotel' },
   { key: 'dining', label: 'Dining', cat: 'dining' },
+  { key: 'shopping', label: 'Fashion & Shopping', cat: 'shopping' },
+  { key: 'show', label: 'Shows & Entertainment', cat: 'show' },
   { key: 'resale', label: 'Resale' },
 ];
 
@@ -50,7 +52,7 @@ export default function DiscoverScreen() {
   const openDetail = (id: number) => navigation.navigate('ProductDetail', { productId: id });
   const openResale = (productId: number, resaleId: string) => navigation.navigate('ProductDetail', { productId, resaleId });
 
-  const screenBg = filter === 'beauty' || filter === 'hotel' || filter === 'dining' ? categoryAccentTints[filter] : colors.paper;
+  const screenBg = filter !== 'all' && filter !== 'resale' ? categoryAccentTints[filter] : colors.paper;
 
   return (
     <ScrollView style={[styles.screen, { backgroundColor: screenBg }]} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>

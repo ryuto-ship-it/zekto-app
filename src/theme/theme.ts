@@ -29,6 +29,14 @@ export const colors = {
   amberEnd: '#FF6B4A',
   amberTint: '#FFF0DE',
 
+  indigo: '#3B5BDB',
+  indigoEnd: '#5C8DFF',
+  indigoTint: '#E7ECFE',
+
+  emerald: '#16A34A',
+  emeraldEnd: '#6EE7B7',
+  emeraldTint: '#DCFCE7',
+
   // Currency / stablecoin gold — independent of the category colors above,
   // used only for the balance chip and anything asset/coin-related (the
   // price-ladder stablecoin row, the AI badge, resale price tags).
@@ -76,30 +84,40 @@ export const categoryColors: Record<string, [string, string]> = {
   beauty: [colors.coral, colors.coralEnd],
   hotel: [colors.teal, colors.tealEnd],
   dining: [colors.amber, colors.amberEnd],
+  shopping: [colors.indigo, colors.indigoEnd],
+  show: [colors.emerald, colors.emeraldEnd],
 };
 
 export const categoryAccents: Record<string, string> = {
   beauty: colors.coral,
   hotel: colors.teal,
   dining: colors.amber,
+  shopping: colors.indigo,
+  show: colors.emerald,
 };
 
 export const categoryAccentTints: Record<string, string> = {
   beauty: colors.coralTint,
   hotel: colors.tealTint,
   dining: colors.amberTint,
+  shopping: colors.indigoTint,
+  show: colors.emeraldTint,
 };
 
 export const categoryLabels: Record<string, string> = {
   beauty: 'Beauty & Medical',
   hotel: 'Hotels',
   dining: 'Dining',
+  shopping: 'Fashion & Shopping',
+  show: 'Shows & Entertainment',
 };
 
 export const categoryEmoji: Record<string, string> = {
   beauty: '💉',
   hotel: '🏨',
   dining: '🍴',
+  shopping: '🛍️',
+  show: '🎭',
 };
 
 // Shared card-depth shadow presets. Deliberately much stronger than a subtle
