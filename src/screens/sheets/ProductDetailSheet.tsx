@@ -22,7 +22,7 @@ export default function ProductDetailSheet() {
   const route = useRoute<RouteProp<RootStackParamList, 'ProductDetail'>>();
   const product = getProduct(route.params.productId);
   const showToast = useToast();
-  const { resaleListings } = useApp();
+  const { resaleListings, tier } = useApp();
   const resaleId = route.params.resaleId;
   const listing = resaleId ? resaleListings.find((l) => l.id === resaleId) : undefined;
 
@@ -30,7 +30,7 @@ export default function ProductDetailSheet() {
 
   const cardPrice = finalPrice(product.price, product.cardPct);
   const cashPrice = finalPrice(product.price, product.cashPct);
-  const coinPrice = listing ? listing.resalePrice : finalPrice(product.price, product.coinPct);
+  const coinPrice = listing ? listing.resalePrice : finalPrice(product.price, product.coinPct + tier.discountBonusPct);
   const wasPrice = listing ? listing.originalPrice : product.price;
 
   return (
@@ -64,6 +64,12 @@ export default function ProductDetailSheet() {
         {listing ? <Text style={styles.sellerLine}>Resold by {listing.sellerLabel}</Text> : null}
         <Text style={styles.desc}>{product.desc}</Text>
 
+        {!listing && tier.perk ? (
+          <View style={styles.perkBadge}>
+            <Text style={styles.perkBadgeText}>{tier.emoji} {tier.perk}</Text>
+          </View>
+        ) : null}
+
         <View style={styles.aiBadge}>
           <Text style={styles.aiText}>
             ✨ <Text style={styles.aiBold}>SSDA AI</Text> found your best benefit and applied it automatically — no codes to enter.
@@ -95,8 +101,15 @@ export default function ProductDetailSheet() {
             bestText={listing ? `RESALE · ${won(wasPrice - coinPrice)} OFF ORIGINAL` : `ALWAYS ACCEPTED · ${won(product.price - coinPrice)} CHEAPER`}
           />
           {!listing ? <Text style={styles.ladderNote}>Card merchant fees, shared back with you.</Text> : null}
-          <View style={styles.chainBadge}>
-            <Text style={styles.chainBadgeText}>⛓ On-chain Issued · tamper-proof</Text>
+          <View style={styles.badgeRow}>
+            <View style={styles.chainBadge}>
+              <Text style={styles.chainBadgeText}>⛓ On-chain Issued · tamper-proof</Text>
+            </View>
+            {!listing && tier.discountBonusPct > 0 ? (
+              <View style={styles.tierDiscountBadge}>
+                <Text style={styles.tierDiscountBadgeText}>{tier.emoji} {tier.label} discount included</Text>
+              </View>
+            ) : null}
           </View>
         </View>
       </View>
@@ -115,6 +128,8 @@ const styles = StyleSheet.create({
   merchant: { fontSize: 12.5, color: colors.inkSoft, fontFamily: fonts.sans },
   sellerLine: { fontSize: 11.5, color: colors.gold, fontFamily: fonts.sansBold, marginTop: 3 },
   desc: { fontSize: 13, color: colors.inkSoft, lineHeight: 20, marginVertical: 14, fontFamily: fonts.sans },
+  perkBadge: { alignSelf: 'flex-start', backgroundColor: colors.goldTint, borderRadius: radii.sm, paddingVertical: 6, paddingHorizontal: 10, marginBottom: 12 },
+  perkBadgeText: { fontSize: 11, color: '#7A6023', fontFamily: fonts.sansBold },
   aiBadge: { flexDirection: 'row', backgroundColor: colors.goldTint, borderWidth: 1, borderColor: '#E4D6A8', padding: 12, borderRadius: 12, marginVertical: 14 },
   aiText: { fontSize: 11.5, color: '#7A6023', flex: 1, fontFamily: fonts.sans },
   aiBold: { color: '#5E4A1A', fontFamily: fonts.sansBold },
@@ -127,8 +142,11 @@ const styles = StyleSheet.create({
   ladderCard: { backgroundColor: colors.white, borderRadius: radii.xl, padding: 16, marginVertical: 14, ...shadows.card },
   ladderCap: { fontSize: 10.5, textTransform: 'uppercase', letterSpacing: 0.6, color: colors.inkSoft, fontFamily: fonts.sansBold, marginBottom: 10 },
   ladderNote: { fontSize: 10.5, color: colors.inkSoft, marginTop: 10, fontFamily: fonts.sans },
-  chainBadge: { alignSelf: 'flex-start', marginTop: 10, backgroundColor: colors.primaryTint, borderRadius: radii.sm, paddingVertical: 4, paddingHorizontal: 8 },
+  badgeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 10 },
+  chainBadge: { alignSelf: 'flex-start', backgroundColor: colors.primaryTint, borderRadius: radii.sm, paddingVertical: 4, paddingHorizontal: 8 },
   chainBadgeText: { fontSize: 10, color: colors.primary, fontFamily: fonts.sansBold },
+  tierDiscountBadge: { alignSelf: 'flex-start', backgroundColor: colors.roseTint, borderRadius: radii.sm, paddingVertical: 4, paddingHorizontal: 8 },
+  tierDiscountBadgeText: { fontSize: 10, color: colors.roseDeep, fontFamily: fonts.sansBold },
   ctaPrice: {},
   ctaWas: { fontSize: 11, color: '#9AA79D', textDecorationLine: 'line-through', fontFamily: fonts.mono },
   ctaNow: { fontFamily: fonts.monoSemiBold, fontSize: 18, color: colors.primary },

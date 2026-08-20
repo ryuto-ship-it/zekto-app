@@ -19,7 +19,7 @@ const LIST_ITEMS = [
 
 export default function ProfileScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { balance } = useApp();
+  const { balance, points, tier } = useApp();
   const showToast = useToast();
 
   return (
@@ -29,6 +29,10 @@ export default function ProfileScreen() {
         <View>
           <Text style={styles.name}>Declan Murphy</Text>
           <Text style={styles.sub}>Traveler from Dublin, Ireland · Joined Aug 2026</Text>
+          <Pressable style={styles.tierBadge} onPress={() => navigation.navigate('TierInfo')}>
+            <Text style={styles.tierBadgeText}>{tier.emoji} {tier.label} Member</Text>
+            <Text style={styles.tierBadgeChevron}>›</Text>
+          </Pressable>
         </View>
       </View>
 
@@ -44,6 +48,17 @@ export default function ProfileScreen() {
           </Pressable>
         </View>
       </LinearGradient>
+
+      <Pressable onPress={() => navigation.navigate('TierInfo')}>
+        <LinearGradient colors={[colors.rose, colors.roseLight]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.pointsCard}>
+          <View style={styles.pointsCardLeft}>
+            <Text style={styles.pointsLabel}>FUTUREPASS POINTS</Text>
+            <Text style={styles.pointsNum}>{points.toLocaleString('en-US')}P</Text>
+            <Text style={styles.pointsHint}>Earn {Math.round(tier.earnRate * 1000) / 10}% back on every stablecoin purchase</Text>
+          </View>
+          <Text style={styles.pointsChevron}>›</Text>
+        </LinearGradient>
+      </Pressable>
 
       <View style={styles.list}>
         {LIST_ITEMS.map(({ key, label, Icon }) => (
@@ -75,7 +90,22 @@ const styles = StyleSheet.create({
   avatar: { width: 56, height: 56, borderRadius: 28 },
   name: { fontFamily: fonts.serif, fontSize: 18, color: colors.ink },
   sub: { fontSize: 11.5, color: colors.inkSoft, marginTop: 2, fontFamily: fonts.sans },
-  balanceCard: { marginHorizontal: 20, marginBottom: 20, borderRadius: radii.xl, padding: 18, ...shadows.card },
+  tierBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 3, alignSelf: 'flex-start', marginTop: 6,
+    backgroundColor: colors.goldTint, borderRadius: radii.pill, paddingVertical: 3, paddingHorizontal: 9,
+  },
+  tierBadgeText: { fontSize: 11, color: '#7A6023', fontFamily: fonts.sansBold },
+  tierBadgeChevron: { fontSize: 12, color: '#7A6023' },
+  balanceCard: { marginHorizontal: 20, marginBottom: 14, borderRadius: radii.xl, padding: 18, ...shadows.card },
+  pointsCard: {
+    marginHorizontal: 20, marginBottom: 20, borderRadius: radii.xl, padding: 16,
+    flexDirection: 'row', alignItems: 'center', ...shadows.card,
+  },
+  pointsCardLeft: { flex: 1 },
+  pointsLabel: { fontSize: 10.5, color: 'rgba(255,255,255,0.85)', letterSpacing: 0.6, fontFamily: fonts.sansMedium },
+  pointsNum: { fontFamily: fonts.monoSemiBold, fontSize: 22, color: colors.white, marginTop: 4 },
+  pointsHint: { fontSize: 10.5, color: 'rgba(255,255,255,0.9)', marginTop: 5, fontFamily: fonts.sans },
+  pointsChevron: { fontSize: 22, color: colors.white },
   balanceLabel: { fontSize: 11, color: 'rgba(31,20,4,0.65)', letterSpacing: 0.6, fontFamily: fonts.sansMedium },
   balanceNum: { fontFamily: fonts.monoSemiBold, fontSize: 26, color: '#2B1B03', marginTop: 4, marginBottom: 12 },
   balanceRow: { flexDirection: 'row', gap: 10 },

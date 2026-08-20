@@ -5,6 +5,7 @@ import { CoinSymbol } from '../types/purchase';
 import { ResaleListing, ChatThread, SEED_RESALE_LISTINGS, seedChatThread } from '../data/resale';
 import { buildSeedPasses, SEED_PASS_COUNT } from '../data/walletSeed';
 import { Transaction, TransactionType, makeTxHash } from '../data/transactions';
+import { Tier, tierForSpend } from '../data/tiers';
 
 export const STARTING_BALANCE = 15000;
 
@@ -26,18 +27,23 @@ export type Pass = {
   resalePrice?: number;
 };
 
+export type PurchaseResult = { pass: Pass; earnedPoints: number };
+
 type AppState = {
   balance: number;
   purchased: Pass[];
-  purchasePass: (product: Product, coin: CoinSymbol, sourceLabel: string) => Pass;
+  purchasePass: (product: Product, coin: CoinSymbol, sourceLabel: string, pointsUsed?: number) => PurchaseResult;
   markUsed: (uid: number) => void;
   totalSaved: number;
   redeemedCount: number;
   resaleListings: ResaleListing[];
   listForResale: (passUid: number, resalePrice: number, description: string) => void;
   cancelResale: (passUid: number) => void;
-  buyResaleListing: (listingId: string, coin: CoinSymbol, sourceLabel: string) => Pass | undefined;
+  buyResaleListing: (listingId: string, coin: CoinSymbol, sourceLabel: string) => PurchaseResult | undefined;
   resoldCount: number;
+  points: number;
+  lifetimeSpend: number;
+  tier: Tier;
   toggleLike: (listingId: string) => void;
   bumpListingViews: () => void;
   bumpListing: (listingId: string) => void;
@@ -103,6 +109,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [resoldCount, setResoldCount] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>(() => buildSeedTransactions(buildSeedPasses()));
   const [activeRegionName, setActiveRegionName] = useState<string | null>(null);
+  const [points, setPoints] = useState(() => {
+    const seedSpend = buildSeedPasses().reduce((s, p) => s + p.price, 0);
+    return Math.round(seedSpend * tierForSpend(seedSpend).earnRate);
+  });
+
+  const lifetimeSpend = useMemo(() => purchased.reduce((s, p) => s + p.price, 0), [purchased]);
+  const tier = useMemo(() => tierForSpend(lifetimeSpend), [lifetimeSpend]);
 
   const pushTransaction = useCallback((t: Omit<Transaction, 'id' | 'hash' | 'status' | 'timestamp'>) => {
     setTransactions((prev) => [
@@ -118,8 +131,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const purchasePass = useCallback(
-    (product: Product, coin: CoinSymbol, sourceLabel: string): Pass => {
-      const price = finalPrice(product.price, product.coinPct);
+    (product: Product, coin: CoinSymbol, sourceLabel: string, pointsUsed = 0): PurchaseResult => {
+      // Tier members get an extra stablecoin-only discount on top of the product's base coinPct.
+      const price = finalPrice(product.price, product.coinPct + tier.discountBonusPct);
+      const pointsRedeemed = Math.max(0, Math.min(pointsUsed, price));
+      const payable = price - pointsRedeemed;
+      const earnedPoints = Math.round(payable * tier.earnRate);
       const pass: Pass = {
         uid: nextUid(),
         productId: product.id,
@@ -139,11 +156,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setPurchased((prev) => [pass, ...prev]);
       // Coin price is quoted in KRW in the mock data; balance is tracked in USDT for
       // display purposes only since there is no real FX/payment backend yet.
-      setBalance((prev) => Math.max(0, prev - price / 1300));
-      pushTransaction({ type: 'purchase', label: product.title, amount: price / 1300, coin });
-      return pass;
+      setBalance((prev) => Math.max(0, prev - payable / 1300));
+      setPoints((prev) => prev - pointsRedeemed + earnedPoints);
+      pushTransaction({ type: 'purchase', label: product.title, amount: payable / 1300, coin });
+      return { pass, earnedPoints };
     },
-    [pushTransaction]
+    [pushTransaction, tier]
   );
 
   const markUsed = useCallback((uid: number) => {
@@ -191,8 +209,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const buyResaleListing = useCallback(
-    (listingId: string, coin: CoinSymbol, sourceLabel: string): Pass | undefined => {
-      let bought: Pass | undefined;
+    (listingId: string, coin: CoinSymbol, sourceLabel: string): PurchaseResult | undefined => {
+      let result: PurchaseResult | undefined;
       setResaleListings((prev) => {
         const listing = prev.find((l) => l.id === listingId);
         if (!listing) return prev;
@@ -213,7 +231,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           source: sourceLabel,
           resaleStatus: 'none',
         };
-        bought = pass;
+        const earnedPoints = Math.round(listing.resalePrice * tier.earnRate);
+        result = { pass, earnedPoints };
 
         setPurchased((prevPassed) => {
           const withoutSellerCopy = listing.ownPassUid
@@ -222,6 +241,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           return [pass, ...withoutSellerCopy];
         });
         setBalance((prevBalance) => Math.max(0, prevBalance - listing.resalePrice / 1300));
+        setPoints((prev) => prev + earnedPoints);
         if (listing.ownPassUid) {
           setResoldCount((c) => c + 1);
           pushTransaction({ type: 'resale_sold', label: `Sold: ${listing.title}`, amount: listing.resalePrice / 1300, coin });
@@ -232,9 +252,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
         return prev.filter((l) => l.id !== listingId);
       });
-      return bought;
+      return result;
     },
-    [pushTransaction]
+    [pushTransaction, tier]
   );
 
   const toggleLike = useCallback((listingId: string) => {
@@ -361,6 +381,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       addFunds,
       activeRegionName,
       setActiveRegionName,
+      points,
+      lifetimeSpend,
+      tier,
     }),
     [
       balance,
@@ -384,6 +407,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       transactions,
       addFunds,
       activeRegionName,
+      points,
+      lifetimeSpend,
+      tier,
     ]
   );
 

@@ -13,6 +13,7 @@ import ChatListSheet from '../screens/sheets/ChatListSheet';
 import ChatRoomSheet from '../screens/sheets/ChatRoomSheet';
 import AddFundsSheet from '../screens/sheets/AddFundsSheet';
 import TransactionHistorySheet from '../screens/sheets/TransactionHistorySheet';
+import TierInfoSheet from '../screens/sheets/TierInfoSheet';
 import { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -36,6 +37,7 @@ export default function RootNavigator() {
           <Stack.Screen name="ChatRoom" component={ChatRoomSheet} />
           <Stack.Screen name="AddFunds" component={AddFundsSheet} />
           <Stack.Screen name="TransactionHistory" component={TransactionHistorySheet} />
+          <Stack.Screen name="TierInfo" component={TierInfoSheet} />
         </Stack.Group>
       </Stack.Navigator>
     </NavigationContainer>

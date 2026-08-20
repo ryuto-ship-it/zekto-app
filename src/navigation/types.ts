@@ -13,6 +13,7 @@ export type RootStackParamList = {
   ChatRoom: { listingId: string; threadId: string };
   AddFunds: undefined;
   TransactionHistory: undefined;
+  TierInfo: undefined;
 };
 
 export type TabParamList = {

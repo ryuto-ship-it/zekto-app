@@ -43,6 +43,13 @@ export const colors = {
   gold: '#F0B429',
   goldLight: '#F9D976',
   goldTint: '#FDF2D9',
+
+  // Rose-gold — reserved for the FuturePass Points loyalty system, visually
+  // distinct from both the currency gold and the beauty coral.
+  rose: '#E0508A',
+  roseLight: '#F7A6C4',
+  roseTint: '#FFF0F5',
+  roseDeep: '#9D174D',
 };
 
 export const fonts = {
