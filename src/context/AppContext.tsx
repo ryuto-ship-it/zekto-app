@@ -47,6 +47,8 @@ type AppState = {
   totalUnreadMessages: number;
   transactions: Transaction[];
   addFunds: (amount: number, coin: CoinSymbol, sourceLabel: string) => void;
+  activeRegionName: string | null;
+  setActiveRegionName: (name: string | null) => void;
 };
 
 const AppContext = createContext<AppState | undefined>(undefined);
@@ -100,6 +102,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [resaleListings, setResaleListings] = useState<ResaleListing[]>(SEED_RESALE_LISTINGS);
   const [resoldCount, setResoldCount] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>(() => buildSeedTransactions(buildSeedPasses()));
+  const [activeRegionName, setActiveRegionName] = useState<string | null>(null);
 
   const pushTransaction = useCallback((t: Omit<Transaction, 'id' | 'hash' | 'status' | 'timestamp'>) => {
     setTransactions((prev) => [
@@ -356,6 +359,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       totalUnreadMessages,
       transactions,
       addFunds,
+      activeRegionName,
+      setActiveRegionName,
     }),
     [
       balance,
@@ -378,6 +383,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       totalUnreadMessages,
       transactions,
       addFunds,
+      activeRegionName,
     ]
   );
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
-import { colors, fonts, categoryAccents } from '../theme/theme';
+import { colors, fonts, categoryAccents, categoryEmoji } from '../theme/theme';
 import { MAP_BOUNDS, YOU_COORDS, merchantBestCoinPct } from '../data/merchants';
 import { SeoulMapViewProps } from './SeoulMapView.types';
 
@@ -23,24 +23,24 @@ export default function SeoulMapView({ merchants, onPressMerchant, focusRegion }
 
   return (
     <MapView ref={mapRef} style={StyleSheet.absoluteFill} initialRegion={INITIAL_REGION}>
-      <Marker coordinate={YOU_COORDS} anchor={{ x: 0.5, y: 1 }}>
+      <Marker coordinate={YOU_COORDS} anchor={{ x: 0.5, y: 0.5 }}>
         <View style={[styles.pinDot, styles.pinDotYou]}>
-          <Text style={styles.pinDotText}>YOU</Text>
+          <Text style={styles.pinEmoji}>🧭</Text>
         </View>
       </Marker>
       {merchants.map((m) => (
         <Marker
           key={m.id}
           coordinate={m.coords}
-          anchor={{ x: 0.5, y: 1 }}
+          anchor={{ x: 0.5, y: 0.5 }}
           onPress={() => onPressMerchant(m.id)}
         >
           <View style={styles.pin}>
             <View style={[styles.pinDot, { backgroundColor: categoryAccents[m.cat] }]}>
-              <Text style={styles.pinDotText}>-{merchantBestCoinPct(m.id)}%</Text>
+              <Text style={styles.pinEmoji}>{categoryEmoji[m.cat]}</Text>
             </View>
-            <View style={styles.pinLabel}>
-              <Text style={styles.pinLabelText}>✓ {m.name.split(' ')[0]}</Text>
+            <View style={styles.pctBadge}>
+              <Text style={styles.pctBadgeText}>-{merchantBestCoinPct(m.id)}%</Text>
             </View>
           </View>
         </Marker>
@@ -50,14 +50,18 @@ export default function SeoulMapView({ merchants, onPressMerchant, focusRegion }
 }
 
 const styles = StyleSheet.create({
-  pin: { alignItems: 'center' },
+  pin: { alignItems: 'center', justifyContent: 'center', width: 38, height: 38 },
   pinDot: {
-    width: 32, height: 32, borderRadius: 16, borderBottomRightRadius: 0,
-    backgroundColor: colors.primary, transform: [{ rotate: '45deg' }], alignItems: 'center', justifyContent: 'center',
-    borderWidth: 2, borderColor: 'rgba(255,255,255,0.6)',
+    width: 34, height: 34, borderRadius: 17, borderBottomLeftRadius: 4,
+    backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center',
+    borderWidth: 2, borderColor: colors.white,
+    shadowColor: colors.ink, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 5,
   },
   pinDotYou: { backgroundColor: colors.ink },
-  pinDotText: { color: colors.white, fontSize: 9, fontFamily: fonts.sansBold, transform: [{ rotate: '-45deg' }] },
-  pinLabel: { marginTop: 4, backgroundColor: colors.white, paddingVertical: 2, paddingHorizontal: 6, borderRadius: 6 },
-  pinLabelText: { fontSize: 9.5, fontFamily: fonts.sansBold, color: colors.ink },
+  pinEmoji: { fontSize: 16, lineHeight: 18 },
+  pctBadge: {
+    position: 'absolute', top: -4, right: -6, backgroundColor: colors.ink, borderRadius: 8,
+    paddingVertical: 1, paddingHorizontal: 4, borderWidth: 1.5, borderColor: colors.white,
+  },
+  pctBadgeText: { color: colors.white, fontSize: 8.5, fontFamily: fonts.sansBold },
 });

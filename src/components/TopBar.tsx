@@ -5,12 +5,12 @@ import { colors, fonts, radii, shadows } from '../theme/theme';
 import { useApp } from '../context/AppContext';
 
 export default function TopBar() {
-  const { balance } = useApp();
+  const { balance, activeRegionName } = useApp();
   return (
     <View style={styles.topbar}>
       <View>
         <Text style={styles.wordmark}>FuturePass</Text>
-        <Text style={styles.loc}>📍 Seoul, KR</Text>
+        <Text style={styles.loc}>📍 {activeRegionName ? `${activeRegionName}, Seoul` : 'Seoul, KR'}</Text>
       </View>
       <LinearGradient
         colors={[colors.gold, colors.goldLight]}

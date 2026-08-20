@@ -96,6 +96,12 @@ export const categoryLabels: Record<string, string> = {
   dining: 'Dining',
 };
 
+export const categoryEmoji: Record<string, string> = {
+  beauty: '💉',
+  hotel: '🏨',
+  dining: '🍴',
+};
+
 // Shared card-depth shadow presets. Deliberately much stronger than a subtle
 // "flat design" shadow so cards read as physically lifted off the background.
 export const shadows = {

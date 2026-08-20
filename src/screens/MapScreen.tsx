@@ -10,6 +10,8 @@ import Chip from '../components/Chip';
 import SeoulMapView from '../components/SeoulMapView';
 import { CategoryIcon, DiscoverIcon } from '../components/Icons';
 import { RootStackParamList } from '../navigation/types';
+import { useApp } from '../context/AppContext';
+import HScroll from '../components/HScroll';
 
 const LIVE_BASE = 128;
 const REGION_ZOOM_DELTA = 0.02;
@@ -25,6 +27,7 @@ const CHIPS: { key: Filter; label: string; cat?: Category }[] = [
 
 export default function MapScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { setActiveRegionName } = useApp();
   const [filter, setFilter] = useState<Filter>('all');
   const [regionId, setRegionId] = useState<string | null>(null);
   const [liveCount, setLiveCount] = useState(LIVE_BASE);
@@ -38,6 +41,10 @@ export default function MapScreen() {
   }, []);
 
   const region = REGIONS.find((r) => r.id === regionId) ?? null;
+
+  useEffect(() => {
+    setActiveRegionName(region ? region.name : null);
+  }, [region, setActiveRegionName]);
 
   const merchants = useMemo(() => {
     let items = filter === 'all' ? MERCHANTS : MERCHANTS.filter((m) => m.cat === filter);
@@ -67,7 +74,7 @@ export default function MapScreen() {
         <Text style={styles.liveText}>{liveCount} travelers browsing benefits near you</Text>
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow} contentContainerStyle={styles.chipRowContent}>
+      <HScroll style={styles.chipRow} contentContainerStyle={styles.chipRowContent}>
         {CHIPS.map((c) => {
           const active = filter === c.key;
           const activeColor = c.cat ? categoryAccents[c.cat] : colors.primary;
@@ -88,10 +95,10 @@ export default function MapScreen() {
             />
           );
         })}
-      </ScrollView>
+      </HScroll>
 
       <Text style={styles.regionCap}>Neighborhoods</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.regionRow} contentContainerStyle={styles.regionRowContent}>
+      <HScroll style={styles.regionRow} contentContainerStyle={styles.regionRowContent}>
         {REGIONS.map((r) => {
           const active = regionId === r.id;
           return (
@@ -105,7 +112,7 @@ export default function MapScreen() {
             </Pressable>
           );
         })}
-      </ScrollView>
+      </HScroll>
 
       <View style={styles.mapArea}>
         <SeoulMapView merchants={merchants} onPressMerchant={openMerchant} focusRegion={focusRegion} />

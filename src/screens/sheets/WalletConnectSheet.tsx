@@ -64,15 +64,17 @@ export default function WalletConnectSheet() {
           <Text style={styles.h2}>Choose payment source</Text>
           <Text style={styles.subhead}>Pay from your FuturePass balance, or connect your own wallet.</Text>
 
-          <Pressable style={styles.option} onPress={chooseZekto}>
-            <View style={[styles.icon, styles.iconZekto]}>
-              <Text style={styles.iconZektoText}>F</Text>
-            </View>
-            <View style={styles.optionText}>
-              <Text style={styles.optionTitle}>FuturePass Balance</Text>
-              <Text style={styles.optionSub}>{balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} {route.params.currentCoin} · instant, no network fee</Text>
-            </View>
-          </Pressable>
+          {!route.params.hideZekto ? (
+            <Pressable style={styles.option} onPress={chooseZekto}>
+              <View style={[styles.icon, styles.iconZekto]}>
+                <Text style={styles.iconZektoText}>F</Text>
+              </View>
+              <View style={styles.optionText}>
+                <Text style={styles.optionTitle}>FuturePass Balance</Text>
+                <Text style={styles.optionSub}>{balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} {route.params.currentCoin} · instant, no network fee</Text>
+              </View>
+            </Pressable>
+          ) : null}
 
           <Pressable style={styles.option} onPress={() => chooseWallet('MetaMask')}>
             <View style={[styles.icon, styles.iconMM]}>

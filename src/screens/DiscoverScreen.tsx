@@ -11,6 +11,7 @@ import { ResaleCard } from '../components/ResaleCard';
 import { SearchIcon, CategoryIcon, DiscoverIcon } from '../components/Icons';
 import { useApp } from '../context/AppContext';
 import { RootStackParamList } from '../navigation/types';
+import HScroll from '../components/HScroll';
 
 type Filter = 'all' | Category | 'resale';
 
@@ -76,7 +77,7 @@ export default function DiscoverScreen() {
         </View>
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow} contentContainerStyle={styles.chipRowContent}>
+      <HScroll style={styles.chipRow} contentContainerStyle={styles.chipRowContent}>
         {CHIPS.map((c) => {
           const active = filter === c.key;
           const activeColor = c.cat ? categoryAccents[c.cat] : c.key === 'resale' ? colors.gold : colors.primary;
@@ -97,7 +98,7 @@ export default function DiscoverScreen() {
             />
           );
         })}
-      </ScrollView>
+      </HScroll>
 
       {filter === 'resale' ? (
         <>
@@ -128,11 +129,11 @@ export default function DiscoverScreen() {
             <Text style={styles.sectionTitle}>Editor's picks</Text>
             <Text style={styles.sectionSub}>{picks.length} benefits nearby</Text>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pickScroll}>
+          <HScroll contentContainerStyle={styles.pickScroll}>
             {picks.map((p) => (
               <PickCard key={p.id} product={p} onPress={() => openDetail(p.id)} />
             ))}
-          </ScrollView>
+          </HScroll>
 
           <View style={styles.sectionHead}>
             <Text style={styles.sectionTitle}>{filter === 'all' ? 'All benefits' : categoryLabels[filter]}</Text>

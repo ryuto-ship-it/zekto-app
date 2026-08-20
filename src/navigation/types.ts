@@ -6,11 +6,13 @@ export type RootStackParamList = {
   Purchase: { productId: number; resaleId?: string };
   QRCode: { passUid: number };
   Merchant: { merchantId: string };
-  WalletConnect: { currentCoin: CoinSymbol; onSelectSource: (source: PaymentSource) => void };
+  WalletConnect: { currentCoin: CoinSymbol; onSelectSource: (source: PaymentSource) => void; hideZekto?: boolean };
   Resell: { passUid: number };
   MySales: undefined;
   ChatList: { listingId: string };
   ChatRoom: { listingId: string; threadId: string };
+  AddFunds: undefined;
+  TransactionHistory: undefined;
 };
 
 export type TabParamList = {

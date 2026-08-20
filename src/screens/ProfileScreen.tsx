@@ -1,10 +1,13 @@
 import React from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts, radii, shadows } from '../theme/theme';
 import { useApp } from '../context/AppContext';
 import { useToast } from '../context/ToastContext';
 import { GlobeIcon, BellIcon, LockIcon, ChatIcon, DocIcon, ChevronRight } from '../components/Icons';
+import { RootStackParamList } from '../navigation/types';
 
 const LIST_ITEMS = [
   { key: 'lang', label: 'Language & region', Icon: GlobeIcon },
@@ -15,6 +18,7 @@ const LIST_ITEMS = [
 ];
 
 export default function ProfileScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { balance } = useApp();
   const showToast = useToast();
 
@@ -32,10 +36,10 @@ export default function ProfileScreen() {
         <Text style={styles.balanceLabel}>STABLECOIN BALANCE</Text>
         <Text style={styles.balanceNum}>{balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</Text>
         <View style={styles.balanceRow}>
-          <Pressable style={styles.balanceBtn} onPress={() => showToast('Add funds — coming soon')}>
+          <Pressable style={styles.balanceBtn} onPress={() => navigation.navigate('AddFunds')}>
             <Text style={styles.balanceBtnText}>+ Add funds</Text>
           </Pressable>
-          <Pressable style={styles.balanceBtn} onPress={() => showToast('Transaction history — coming soon')}>
+          <Pressable style={styles.balanceBtn} onPress={() => navigation.navigate('TransactionHistory')}>
             <Text style={styles.balanceBtnText}>Transaction history</Text>
           </Pressable>
         </View>
