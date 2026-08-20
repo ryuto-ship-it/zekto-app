@@ -8,6 +8,9 @@ import QRSheet from '../screens/sheets/QRSheet';
 import MerchantSheet from '../screens/sheets/MerchantSheet';
 import WalletConnectSheet from '../screens/sheets/WalletConnectSheet';
 import ResellSheet from '../screens/sheets/ResellSheet';
+import MySalesSheet from '../screens/sheets/MySalesSheet';
+import ChatListSheet from '../screens/sheets/ChatListSheet';
+import ChatRoomSheet from '../screens/sheets/ChatRoomSheet';
 import { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -26,6 +29,9 @@ export default function RootNavigator() {
           <Stack.Screen name="Merchant" component={MerchantSheet} />
           <Stack.Screen name="WalletConnect" component={WalletConnectSheet} />
           <Stack.Screen name="Resell" component={ResellSheet} />
+          <Stack.Screen name="MySales" component={MySalesSheet} />
+          <Stack.Screen name="ChatList" component={ChatListSheet} />
+          <Stack.Screen name="ChatRoom" component={ChatRoomSheet} />
         </Stack.Group>
       </Stack.Navigator>
     </NavigationContainer>

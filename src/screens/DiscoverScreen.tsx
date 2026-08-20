@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, ScrollView, TextInput, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
@@ -24,9 +24,15 @@ const CHIPS: { key: Filter; label: string; cat?: Category }[] = [
 
 export default function DiscoverScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { resaleListings } = useApp();
+  const { resaleListings, toggleLike, bumpListingViews } = useApp();
   const [filter, setFilter] = useState<Filter>('all');
   const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    if (filter === 'resale') bumpListingViews();
+    // Only re-fire when the Resale tab is (re-)selected, not on every listing update.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter]);
 
   const picks = useMemo(() => PRODUCTS.filter((p) => p.pick), []);
   const list = useMemo(() => {
@@ -101,7 +107,12 @@ export default function DiscoverScreen() {
           </View>
           <View style={styles.dealList}>
             {resaleListings.map((l) => (
-              <ResaleCard key={l.id} listing={l} onPress={() => openResale(l.productId, l.id)} />
+              <ResaleCard
+                key={l.id}
+                listing={l}
+                onPress={() => openResale(l.productId, l.id)}
+                onToggleLike={() => toggleLike(l.id)}
+              />
             ))}
             {resaleListings.length === 0 ? (
               <View style={styles.emptyState}>

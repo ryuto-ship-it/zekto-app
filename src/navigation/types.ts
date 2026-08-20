@@ -8,6 +8,9 @@ export type RootStackParamList = {
   Merchant: { merchantId: string };
   WalletConnect: { currentCoin: CoinSymbol; onSelectSource: (source: PaymentSource) => void };
   Resell: { passUid: number };
+  MySales: undefined;
+  ChatList: { listingId: string };
+  ChatRoom: { listingId: string; threadId: string };
 };
 
 export type TabParamList = {

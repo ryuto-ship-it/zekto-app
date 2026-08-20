@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts, radii } from '../../theme/theme';
@@ -8,7 +8,7 @@ import { useApp } from '../../context/AppContext';
 import { useToast } from '../../context/ToastContext';
 import Sheet from '../../components/Sheet';
 import { PrimaryButton } from '../../components/Buttons';
-import { RESALE_PRESET_PCTS } from '../../data/resale';
+import { RESALE_PRESET_PCTS, DESCRIPTION_PLACEHOLDER } from '../../data/resale';
 import { RootStackParamList } from '../../navigation/types';
 
 export default function ResellSheet() {
@@ -18,19 +18,20 @@ export default function ResellSheet() {
   const showToast = useToast();
   const pass = purchased.find((p) => p.uid === route.params.passUid);
   const [pct, setPct] = useState(0.8);
+  const [description, setDescription] = useState('');
 
   if (!pass) return null;
 
   const resalePrice = Math.round((pass.price * pct) / 1000) * 1000;
 
   const confirm = () => {
-    listForResale(pass.uid, resalePrice);
+    listForResale(pass.uid, resalePrice, description);
     showToast('✓ Listed for resale');
     navigation.goBack();
   };
 
   return (
-    <Sheet onClose={() => navigation.goBack()} scroll={false}>
+    <Sheet onClose={() => navigation.goBack()}>
       <View style={styles.header}>
         <Text style={styles.h2}>Resell this pass</Text>
         <Text style={styles.subhead}>{pass.title}</Text>
@@ -53,6 +54,17 @@ export default function ResellSheet() {
           );
         })}
       </View>
+
+      <Text style={styles.cap}>Add a note for buyers</Text>
+      <TextInput
+        style={styles.descInput}
+        multiline
+        placeholder={DESCRIPTION_PLACEHOLDER}
+        placeholderTextColor={colors.inkSoft}
+        value={description}
+        onChangeText={setDescription}
+      />
+      <Text style={styles.descHint}>The original listing photo is reused — no need to upload anything.</Text>
 
       <View style={styles.summary}>
         <Text style={styles.summaryLabel}>Listing price</Text>
@@ -88,6 +100,12 @@ const styles = StyleSheet.create({
   presetPct: { fontFamily: fonts.monoSemiBold, fontSize: 13, color: colors.ink },
   presetPctActive: { color: '#7A6023' },
   presetPrice: { fontSize: 9.5, color: colors.inkSoft, marginTop: 3, fontFamily: fonts.sans },
+  descInput: {
+    marginHorizontal: 20, marginTop: 10, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line,
+    borderRadius: radii.md, padding: 12, minHeight: 70, fontSize: 12.5, color: colors.ink, fontFamily: fonts.sans,
+    textAlignVertical: 'top',
+  },
+  descHint: { fontSize: 10, color: colors.inkSoft, marginHorizontal: 20, marginTop: 6, fontFamily: fonts.sans },
   summary: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 20,
     marginTop: 18, backgroundColor: colors.primaryTint, borderRadius: radii.md, padding: 14,

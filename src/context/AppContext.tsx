@@ -2,8 +2,9 @@ import React, { createContext, useContext, useMemo, useState, useCallback } from
 import { Product, Category } from '../data/products';
 import { finalPrice } from '../utils/format';
 import { CoinSymbol } from '../types/purchase';
-import { ResaleListing, SEED_RESALE_LISTINGS } from '../data/resale';
+import { ResaleListing, ChatThread, SEED_RESALE_LISTINGS, seedChatThread } from '../data/resale';
 import { buildSeedPasses, SEED_PASS_COUNT } from '../data/walletSeed';
+import { Transaction, TransactionType, makeTxHash } from '../data/transactions';
 
 export const STARTING_BALANCE = 15000;
 
@@ -33,10 +34,19 @@ type AppState = {
   totalSaved: number;
   redeemedCount: number;
   resaleListings: ResaleListing[];
-  listForResale: (passUid: number, resalePrice: number) => void;
+  listForResale: (passUid: number, resalePrice: number, description: string) => void;
   cancelResale: (passUid: number) => void;
   buyResaleListing: (listingId: string, coin: CoinSymbol, sourceLabel: string) => Pass | undefined;
   resoldCount: number;
+  toggleLike: (listingId: string) => void;
+  bumpListingViews: () => void;
+  bumpListing: (listingId: string) => void;
+  updateListingPrice: (listingId: string, newPrice: number) => void;
+  sendChatMessage: (listingId: string, threadId: string, text: string) => void;
+  markThreadRead: (listingId: string, threadId: string) => void;
+  totalUnreadMessages: number;
+  transactions: Transaction[];
+  addFunds: (amount: number, coin: CoinSymbol, sourceLabel: string) => void;
 };
 
 const AppContext = createContext<AppState | undefined>(undefined);
@@ -51,48 +61,94 @@ function nextResaleId() {
   return `mine-${resaleUidCounter++}`;
 }
 
+let txCounter = 1;
+function nextTxId() {
+  return `tx-${txCounter++}`;
+}
+
 function makeCode() {
   const n = Math.floor(100000 + Math.random() * 899999);
   return `ZKT-${n}`;
 }
+
+function buildSeedTransactions(passes: Pass[]): Transaction[] {
+  const now = Date.now();
+  return passes
+    .map((p, i) => ({
+      id: `seed-tx-${p.uid}`,
+      type: 'purchase' as TransactionType,
+      label: p.title,
+      amount: p.price / 1300,
+      coin: p.coin,
+      hash: makeTxHash(),
+      status: 'confirmed' as const,
+      timestamp: now - (passes.length - i) * 3 * 60 * 60 * 1000,
+    }))
+    .reverse();
+}
+
+const AUTO_REPLIES = [
+  "Great, let me know when you're free!",
+  "Sounds good, I'll send payment now.",
+  'Can you hold it for me for an hour?',
+  'Perfect, sending the payment shortly.',
+];
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [balance, setBalance] = useState(STARTING_BALANCE);
   const [purchased, setPurchased] = useState<Pass[]>(() => buildSeedPasses());
   const [resaleListings, setResaleListings] = useState<ResaleListing[]>(SEED_RESALE_LISTINGS);
   const [resoldCount, setResoldCount] = useState(0);
+  const [transactions, setTransactions] = useState<Transaction[]>(() => buildSeedTransactions(buildSeedPasses()));
 
-  const purchasePass = useCallback((product: Product, coin: CoinSymbol, sourceLabel: string): Pass => {
-    const price = finalPrice(product.price, product.coinPct);
-    const pass: Pass = {
-      uid: nextUid(),
-      productId: product.id,
-      title: product.title,
-      merchant: product.merchant,
-      loc: product.loc,
-      cat: product.cat,
-      image: product.image,
-      price,
-      saved: product.price - price,
-      code: makeCode(),
-      used: false,
-      coin,
-      source: sourceLabel,
-      resaleStatus: 'none',
-    };
-    setPurchased((prev) => [pass, ...prev]);
-    // Coin price is quoted in KRW in the mock data; balance is tracked in USDT for
-    // display purposes only since there is no real FX/payment backend yet.
-    setBalance((prev) => Math.max(0, prev - price / 1300));
-    return pass;
+  const pushTransaction = useCallback((t: Omit<Transaction, 'id' | 'hash' | 'status' | 'timestamp'>) => {
+    setTransactions((prev) => [
+      {
+        ...t,
+        id: nextTxId(),
+        hash: makeTxHash(),
+        status: 'confirmed',
+        timestamp: Date.now(),
+      },
+      ...prev,
+    ]);
   }, []);
+
+  const purchasePass = useCallback(
+    (product: Product, coin: CoinSymbol, sourceLabel: string): Pass => {
+      const price = finalPrice(product.price, product.coinPct);
+      const pass: Pass = {
+        uid: nextUid(),
+        productId: product.id,
+        title: product.title,
+        merchant: product.merchant,
+        loc: product.loc,
+        cat: product.cat,
+        image: product.image,
+        price,
+        saved: product.price - price,
+        code: makeCode(),
+        used: false,
+        coin,
+        source: sourceLabel,
+        resaleStatus: 'none',
+      };
+      setPurchased((prev) => [pass, ...prev]);
+      // Coin price is quoted in KRW in the mock data; balance is tracked in USDT for
+      // display purposes only since there is no real FX/payment backend yet.
+      setBalance((prev) => Math.max(0, prev - price / 1300));
+      pushTransaction({ type: 'purchase', label: product.title, amount: price / 1300, coin });
+      return pass;
+    },
+    [pushTransaction]
+  );
 
   const markUsed = useCallback((uid: number) => {
     setPurchased((prev) => prev.map((p) => (p.uid === uid ? { ...p, used: true } : p)));
   }, []);
 
   const listForResale = useCallback(
-    (passUid: number, resalePrice: number) => {
+    (passUid: number, resalePrice: number, description: string) => {
       const pass = purchased.find((p) => p.uid === passUid);
       if (!pass) return;
       setPurchased((prev) =>
@@ -111,6 +167,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           resalePrice,
           sellerLabel: 'You',
           ownPassUid: pass.uid,
+          description: description.trim() || undefined,
+          views: Math.floor(3 + Math.random() * 6),
+          likes: 0,
+          likedByMe: false,
+          status: 'active',
+          chats: [seedChatThread()],
         },
         ...list,
       ]);
@@ -159,17 +221,118 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setBalance((prevBalance) => Math.max(0, prevBalance - listing.resalePrice / 1300));
         if (listing.ownPassUid) {
           setResoldCount((c) => c + 1);
+          pushTransaction({ type: 'resale_sold', label: `Sold: ${listing.title}`, amount: listing.resalePrice / 1300, coin });
+          // Keep the seller's own listing around (marked sold) so it still shows up in My Sales.
+          return prev.map((l) => (l.id === listingId ? { ...l, status: 'sold' as const } : l));
         }
+        pushTransaction({ type: 'resale_bought', label: listing.title, amount: listing.resalePrice / 1300, coin });
 
         return prev.filter((l) => l.id !== listingId);
       });
       return bought;
     },
-    []
+    [pushTransaction]
+  );
+
+  const toggleLike = useCallback((listingId: string) => {
+    setResaleListings((prev) =>
+      prev.map((l) =>
+        l.id === listingId ? { ...l, likedByMe: !l.likedByMe, likes: l.likes + (l.likedByMe ? -1 : 1) } : l
+      )
+    );
+  }, []);
+
+  const bumpListingViews = useCallback(() => {
+    setResaleListings((prev) =>
+      prev.map((l) => (l.status === 'active' ? { ...l, views: l.views + Math.floor(Math.random() * 3) } : l))
+    );
+  }, []);
+
+  const bumpListing = useCallback((listingId: string) => {
+    setResaleListings((prev) => {
+      const found = prev.find((l) => l.id === listingId);
+      if (!found) return prev;
+      const bumped = { ...found, views: found.views + Math.floor(2 + Math.random() * 4) };
+      return [bumped, ...prev.filter((l) => l.id !== listingId)];
+    });
+  }, []);
+
+  const updateListingPrice = useCallback((listingId: string, newPrice: number) => {
+    setResaleListings((prev) => {
+      const listing = prev.find((l) => l.id === listingId);
+      if (listing?.ownPassUid) {
+        setPurchased((prevPassed) =>
+          prevPassed.map((p) => (p.uid === listing.ownPassUid ? { ...p, resalePrice: newPrice } : p))
+        );
+      }
+      return prev.map((l) => (l.id === listingId ? { ...l, resalePrice: newPrice } : l));
+    });
+  }, []);
+
+  const sendChatMessage = useCallback((listingId: string, threadId: string, text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    setResaleListings((prev) =>
+      prev.map((l) => {
+        if (l.id !== listingId) return l;
+        return {
+          ...l,
+          chats: l.chats.map((c) =>
+            c.id === threadId
+              ? { ...c, messages: [...c.messages, { id: `m-${Date.now()}`, sender: 'me', text: trimmed, time: 'now' }] }
+              : c
+          ),
+        };
+      })
+    );
+    setTimeout(() => {
+      const reply = AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)];
+      setResaleListings((prev) =>
+        prev.map((l) => {
+          if (l.id !== listingId) return l;
+          return {
+            ...l,
+            chats: l.chats.map((c) =>
+              c.id === threadId
+                ? {
+                    ...c,
+                    unread: 0,
+                    messages: [...c.messages, { id: `m-${Date.now()}-r`, sender: 'buyer', text: reply, time: 'now' }],
+                  }
+                : c
+            ),
+          };
+        })
+      );
+    }, 1400);
+  }, []);
+
+  const markThreadRead = useCallback((listingId: string, threadId: string) => {
+    setResaleListings((prev) =>
+      prev.map((l) => {
+        if (l.id !== listingId) return l;
+        return { ...l, chats: l.chats.map((c) => (c.id === threadId ? { ...c, unread: 0 } : c)) };
+      })
+    );
+  }, []);
+
+  const addFunds = useCallback(
+    (amount: number, coin: CoinSymbol, sourceLabel: string) => {
+      setBalance((prev) => prev + amount);
+      pushTransaction({ type: 'deposit', label: `Deposit via ${sourceLabel}`, amount, coin });
+    },
+    [pushTransaction]
   );
 
   const totalSaved = useMemo(() => purchased.reduce((s, p) => s + p.saved, 0), [purchased]);
   const redeemedCount = useMemo(() => purchased.filter((p) => p.used).length, [purchased]);
+  const totalUnreadMessages = useMemo(
+    () =>
+      resaleListings
+        .filter((l) => l.ownPassUid)
+        .reduce((sum, l) => sum + l.chats.reduce((s, c) => s + c.unread, 0), 0),
+    [resaleListings]
+  );
 
   const value = useMemo(
     () => ({
@@ -184,6 +347,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       cancelResale,
       buyResaleListing,
       resoldCount,
+      toggleLike,
+      bumpListingViews,
+      bumpListing,
+      updateListingPrice,
+      sendChatMessage,
+      markThreadRead,
+      totalUnreadMessages,
+      transactions,
+      addFunds,
     }),
     [
       balance,
@@ -197,6 +369,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       cancelResale,
       buyResaleListing,
       resoldCount,
+      toggleLike,
+      bumpListingViews,
+      bumpListing,
+      updateListingPrice,
+      sendChatMessage,
+      markThreadRead,
+      totalUnreadMessages,
+      transactions,
+      addFunds,
     ]
   );
 

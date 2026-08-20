@@ -1,11 +1,19 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { colors, fonts, radii, shadows, categoryLabels, categoryAccents } from '../theme/theme';
 import { won, imgUrl } from '../utils/format';
 import { ResaleListing } from '../data/resale';
 import { AnimatedPressable } from './AnimatedCard';
 
-export function ResaleCard({ listing, onPress }: { listing: ResaleListing; onPress: () => void }) {
+export function ResaleCard({
+  listing,
+  onPress,
+  onToggleLike,
+}: {
+  listing: ResaleListing;
+  onPress: () => void;
+  onToggleLike?: () => void;
+}) {
   const pct = Math.round((listing.resalePrice / listing.originalPrice) * 100);
   const accent = categoryAccents[listing.cat];
   return (
@@ -20,6 +28,9 @@ export function ResaleCard({ listing, onPress }: { listing: ResaleListing; onPre
         </View>
         <Text style={styles.title} numberOfLines={2}>{listing.title}</Text>
         <Text style={styles.seller} numberOfLines={1}>From {listing.sellerLabel}</Text>
+        {listing.description ? (
+          <Text style={styles.description} numberOfLines={2}>"{listing.description}"</Text>
+        ) : null}
         <View style={styles.bottom}>
           <View style={styles.priceRow}>
             <Text style={styles.was}>{won(listing.originalPrice)}</Text>
@@ -28,6 +39,14 @@ export function ResaleCard({ listing, onPress }: { listing: ResaleListing; onPre
           <View style={styles.pctTag}>
             <Text style={styles.pctTagText}>{pct}% of original</Text>
           </View>
+        </View>
+        <View style={styles.statsRow}>
+          <Text style={styles.statText}>👁 {listing.views}</Text>
+          <Pressable style={styles.likeBtn} onPress={onToggleLike} hitSlop={8}>
+            <Text style={[styles.statText, listing.likedByMe && styles.likedText]}>
+              {listing.likedByMe ? '♥' : '♡'} {listing.likes}
+            </Text>
+          </Pressable>
         </View>
       </View>
     </AnimatedPressable>
@@ -44,13 +63,18 @@ const styles = StyleSheet.create({
   topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   cat: { fontSize: 9.5, textTransform: 'uppercase', letterSpacing: 0.8, fontFamily: fonts.sansBold },
   ribbon: { backgroundColor: colors.gold, borderRadius: 5, paddingVertical: 2, paddingHorizontal: 6 },
-  ribbonText: { fontSize: 9, fontFamily: fonts.sansBold, color: colors.primary, letterSpacing: 0.4 },
+  ribbonText: { fontSize: 9, fontFamily: fonts.sansBold, color: '#5E4A1A', letterSpacing: 0.4 },
   title: { fontSize: 13.5, fontFamily: fonts.sansExtraBold, color: colors.ink, marginTop: 2, marginBottom: 2, lineHeight: 17 },
   seller: { fontSize: 11, color: colors.inkSoft, fontFamily: fonts.sans },
+  description: { fontSize: 10.5, color: colors.inkSoft, fontStyle: 'italic', marginTop: 3, lineHeight: 14 },
   bottom: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 },
   priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: 5 },
   was: { color: '#9AA79D', textDecorationLine: 'line-through', fontFamily: fonts.mono, fontSize: 10.5 },
   now: { fontFamily: fonts.monoSemiBold, fontSize: 12.5, color: colors.primary },
   pctTag: { backgroundColor: colors.goldTint, paddingVertical: 2, paddingHorizontal: 7, borderRadius: 6 },
   pctTagText: { color: '#7A6023', fontSize: 10, fontFamily: fonts.sansBold },
+  statsRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 6 },
+  likeBtn: { flexDirection: 'row', alignItems: 'center' },
+  statText: { fontSize: 10.5, color: colors.inkSoft, fontFamily: fonts.sansMedium },
+  likedText: { color: colors.coral, fontFamily: fonts.sansBold },
 });
