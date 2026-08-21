@@ -3,45 +3,28 @@
 // https://github.com/ryuto-ship-it/zekto-app so it serves at
 // https://ryuto-ship-it.github.io/zekto-app/.
 //
-// This mirrors the manual process used all session: temporarily set
-// experiments.baseUrl so asset paths resolve under the /zekto-app/ subpath,
-// export, restore app.json, add .nojekyll (GitHub Pages runs Jekyll by
-// default, which silently drops the _expo/ asset folder without it), then
-// force-push dist/ as a fresh orphan gh-pages branch.
+// The build itself (app export + landing page + .nojekyll) lives in
+// build-dist.js, shared with .github/workflows/deploy.yml — that workflow
+// runs this same build automatically on every push to main, so this script
+// is only needed for a manual/local deploy. This script's own job is just
+// the publish step: force-push dist/ as a fresh orphan gh-pages branch
+// using your local git credentials.
 
 const { execSync } = require('child_process');
 const fs = require('fs');
-const path = require('path');
+const { buildDist, DIST_PATH } = require('./build-dist');
 
-const ROOT = path.resolve(__dirname, '..');
-const APP_JSON_PATH = path.join(ROOT, 'app.json');
-const DIST_PATH = path.join(ROOT, 'dist');
 const REPO_URL = 'https://github.com/ryuto-ship-it/zekto-app.git';
-const BASE_URL = '/zekto-app';
 const GIT_AUTHOR_NAME = 'Ryuto';
 const GIT_AUTHOR_EMAIL = 'ryuto@zekto.co.kr';
 
 function run(cmd, opts = {}) {
   console.log(`$ ${cmd}`);
-  execSync(cmd, { stdio: 'inherit', cwd: ROOT, ...opts });
+  execSync(cmd, { stdio: 'inherit', ...opts });
 }
 
 function main() {
-  const appJsonRaw = fs.readFileSync(APP_JSON_PATH, 'utf8');
-
-  try {
-    const appJson = JSON.parse(appJsonRaw);
-    appJson.expo.experiments = { ...(appJson.expo.experiments || {}), baseUrl: BASE_URL };
-    fs.writeFileSync(APP_JSON_PATH, JSON.stringify(appJson, null, 2) + '\n');
-
-    if (fs.existsSync(DIST_PATH)) fs.rmSync(DIST_PATH, { recursive: true, force: true });
-    run('npx expo export -p web');
-  } finally {
-    // Restore byte-for-byte so the temporary baseUrl never gets committed.
-    fs.writeFileSync(APP_JSON_PATH, appJsonRaw);
-  }
-
-  fs.writeFileSync(path.join(DIST_PATH, '.nojekyll'), '');
+  buildDist();
 
   const distOpts = { cwd: DIST_PATH };
   run('git init -q', distOpts);
