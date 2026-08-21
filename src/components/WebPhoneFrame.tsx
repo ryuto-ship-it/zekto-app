@@ -1,13 +1,9 @@
 import React from 'react';
 import { View, Platform, StyleSheet, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import SidePanel from './SidePanel';
 
 const FRAME_WIDTH = 430;
 const FRAME_MAX_HEIGHT = 900;
-// Below this width there simply isn't room for a side rail without crowding
-// the phone frame — the panels stay hidden and only the frame itself shows.
-const SIDE_PANEL_MIN_WIDTH = 768;
 
 // On web, wraps the app in a phone-shaped frame centered on a dark backdrop once the
 // viewport is wider than a real phone — so the desktop preview reads as "a phone on a
@@ -21,13 +17,10 @@ export default function WebPhoneFrame({ children }: { children: React.ReactNode 
   }
 
   const frameHeight = Math.min(height - 48, FRAME_MAX_HEIGHT);
-  const showSidePanels = width >= SIDE_PANEL_MIN_WIDTH;
 
   return (
     <LinearGradient colors={['#2A3B36', '#131B18', '#0D1210']} style={styles.backdrop}>
-      {showSidePanels && <SidePanel side="left" />}
       <View style={[styles.frame, { height: frameHeight }]}>{children}</View>
-      {showSidePanels && <SidePanel side="right" />}
     </LinearGradient>
   );
 }
