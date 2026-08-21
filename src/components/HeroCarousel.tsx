@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, Animated, Easing, PanResponder, LayoutChangeEvent, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { colors, fonts, radii, shadows } from '../theme/theme';
 
 export type HeroSlide = {
@@ -10,6 +11,9 @@ export type HeroSlide = {
   title: string;
   caption: string;
   icon: string;
+  // Optional muted/looping video background instead of the flat gradient —
+  // see assets/videos/README.md, it's a placeholder clip today.
+  video?: number;
 };
 
 const AUTOPLAY_MS = 4500;
@@ -48,6 +52,15 @@ export const HERO_SLIDES: HeroSlide[] = [
     title: 'Pay with stablecoin, earn FuturePass Points on every booking.',
     caption: 'Up to 4% back for Platinum members — redeemable toward your next trip.',
     icon: '🪙',
+  },
+  {
+    key: 'live',
+    gradient: [colors.indigo, colors.indigoEnd],
+    eyebrow: 'LIVE ON ZEKTO',
+    title: 'Real spaces, real menus — see it before you book it.',
+    caption: 'A quick look inside the clinics, stays, and tables going live on ZEKTO this week.',
+    icon: '🎬',
+    video: require('../../assets/videos/hero-placeholder.mp4'),
   },
 ];
 
@@ -118,12 +131,25 @@ function SlideCard({ slide, width, active }: { slide: HeroSlide; width: number; 
   });
 
   return (
-    <LinearGradient
-      colors={slide.gradient}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={[styles.slide, { width: width || undefined }]}
-    >
+    <View style={[styles.slide, { width: width || undefined }]}>
+      {slide.video ? (
+        <>
+          <VideoSlideBackground source={slide.video} active={active} />
+          <LinearGradient
+            colors={['rgba(10,9,18,0.25)', 'rgba(10,9,18,0.82)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0.7, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
+        </>
+      ) : (
+        <LinearGradient
+          colors={slide.gradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+      )}
       <FloatingBlob style={[styles.blob, styles.blobBig]} phase={0} />
       <FloatingBlob style={[styles.blob, styles.blobSmall]} phase={1} />
       <FloatingIcon emoji={slide.icon} />
@@ -134,8 +160,25 @@ function SlideCard({ slide, width, active }: { slide: HeroSlide; width: number; 
       <Animated.Text style={[styles.caption, fadeUp(captionAnim)]} numberOfLines={2}>
         {slide.caption}
       </Animated.Text>
-    </LinearGradient>
+    </View>
   );
+}
+
+function VideoSlideBackground({ source, active }: { source: number; active: boolean }) {
+  const player = useVideoPlayer(source, (p) => {
+    p.loop = true;
+    p.muted = true;
+  });
+
+  useEffect(() => {
+    if (active) player.play();
+    else player.pause();
+  }, [active, player]);
+
+  // expo-video's web-only .d.ts expects a narrower VideoPlayerWeb type here
+  // than useVideoPlayer's cross-platform return type — a type-declaration
+  // mismatch in the library itself, not a real runtime issue.
+  return <VideoView player={player as any} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} />;
 }
 
 export default function HeroCarousel({ slides = HERO_SLIDES }: { slides?: HeroSlide[] }) {
